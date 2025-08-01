@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import contextlib
 from typing import Any, Dict
 
@@ -21,16 +20,29 @@ async def livez() -> Dict[str, Any]:
 
 
 async def _check_postgres(dsn: str) -> bool:
-    # Placeholder: without a DB client dependency, use a cheap TCP check if DSN host:port can be parsed.
-    # For now, return True to avoid failing readiness in local dev; will be replaced when DB client is added.
-    await asyncio.sleep(0)  # keep as async
-    return True
+    # Real check using asyncpg: attempts a short connection and simple query.
+    import asyncpg  # type: ignore[reportMissingImports]
+    try:
+        conn = await asyncpg.connect(dsn=dsn, timeout=2)  # type: ignore[no-untyped-call]
+        try:
+            await conn.execute("SELECT 1;")  # type: ignore[no-untyped-call]
+        finally:
+            await conn.close()  # type: ignore[no-untyped-call]
+        return True
+    except Exception:
+        return False
 
 
 async def _check_redis(url: str) -> bool:
-    # Placeholder redis ping; return True for scaffolding. Will wire to aioredis/redis-py later.
-    await asyncio.sleep(0)
-    return True
+    # Real check using redis asyncio client.
+    import redis.asyncio as redis  # type: ignore[reportMissingImports]
+    try:
+        client = redis.from_url(url, decode_responses=True, socket_connect_timeout=2, socket_timeout=2)  # type: ignore[no-untyped-call]
+        pong = await client.ping()  # type: ignore[no-untyped-call]
+        await client.close()  # type: ignore[no-untyped-call]
+        return bool(pong)
+    except Exception:
+        return False
 
 
 @router.get("/readyz", summary="Readiness probe")
