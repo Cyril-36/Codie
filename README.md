@@ -42,10 +42,57 @@ This repository is a monorepo with backend, frontend, AI orchestration, infra, a
 
 ## Badges
 
+| Backend | Frontend | OpenAPI | Docs |
+|---|---|---|---|
+| ![Backend CI](https://github.com/OWNER/REPO/actions/workflows/backend.yml/badge.svg) | ![Frontend CI](https://github.com/OWNER/REPO/actions/workflows/frontend.yml/badge.svg) | ![OpenAPI CI](https://github.com/OWNER/REPO/actions/workflows/openapi.yml/badge.svg) | ![Docs CI](https://github.com/OWNER/REPO/actions/workflows/docs.yml/badge.svg) |
+
+> Replace OWNER/REPO with your GitHub slug to activate badges.
+
 <!-- badge:docs-coverage -->
 <!-- badge:test-coverage -->
 <!-- badge:perf-regression -->
 <!-- badge:security-hygiene -->
+
+## Contributor Quickstart
+
+Prereqs:
+- Python 3.11+, Node 20+, Docker + Docker Compose
+
+Backend:
+```bash
+python3 -m pip install -r codie-backend/requirements.txt
+# optional probes via .env
+# ENABLE_POSTGRES_PROBE=true
+# POSTGRES_DSN=postgresql://postgres:postgres@localhost:5432/postgres
+# ENABLE_REDIS_PROBE=true
+# REDIS_URL=redis://localhost:6379/0
+uvicorn codie-backend.app.main:app --reload
+# Health
+curl http://localhost:8000/livez
+curl http://localhost:8000/readyz
+```
+
+Frontend:
+```bash
+cd codie-frontend
+npm ci
+npm run lint --if-present
+npm run build
+npm start
+```
+
+OpenAPI governance:
+```bash
+python codie-backend/app/openapi_export.py -o docs/openapi/openapi.json
+# Spectral lint (via CI; locally if installed)
+# spectral lint docs/openapi/openapi.json -r .spectral.yaml
+# redocly lint docs/openapi/openapi.json
+```
+
+Local DB/Cache (optional):
+- Postgres: localhost:5432
+- Redis: localhost:6379
+- You can add docker-compose services later for frictionless onboarding.
 
 ## License
 
