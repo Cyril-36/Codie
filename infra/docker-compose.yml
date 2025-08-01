@@ -1,0 +1,93 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: codie-postgres
+    environment:
+      POSTGRES_DB: codie
+      POSTGRES_USER: codie
+      POSTGRES_PASSWORD: codie
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U codie -d codie"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: codie-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-01-10T00-00-00Z
+    container_name: codie-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: codie
+      MINIO_ROOT_PASSWORD: codiepassword
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9001/minio/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    build:
+      context: ../codie-backend
+      dockerfile: Dockerfile
+    container_name: codie-backend
+    env_file:
+      - ../codie-backend/.env
+    environment:
+      DATABASE_URL: postgresql+psycopg://codie:codie@postgres:5432/codie
+      REDIS_URL: redis://redis:6379/0
+      OBJECT_STORE_ENDPOINT: http://minio:9000
+      OBJECT_STORE_BUCKET: codie-artifacts
+      OBJECT_STORE_ACCESS_KEY: codie
+      OBJECT_STORE_SECRET_KEY: codiepassword
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ENV: local
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ../codie-frontend
+      dockerfile: Dockerfile
+    container_name: codie-frontend
+    env_file:
+      - ../codie-frontend/.env.local
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+      ENV: local
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
+  miniodata:

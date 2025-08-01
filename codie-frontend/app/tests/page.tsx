@@ -1,0 +1,1 @@
+export default function Tests(){return (<div className='container'><div className='card'><h2 className='text-lg font-semibold'>Tests &amp; Coverage</h2><p className='mt-2 text-sm text-neutral-300'>AI-generated tests queue and coverage deltas will show here.</p></div></div>);}

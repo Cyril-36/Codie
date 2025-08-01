@@ -1,0 +1,30 @@
+# CODEOWNERS defines reviewers for code and docs governance. Paths are evaluated top-to-bottom.
+
+# Global owners
+*                             @your-org/eng-leads
+
+# Docs ownership
+/docs/                         @your-org/tech-writers @your-org/eng-leads
+/docs/architecture/            @your-org/architects
+/docs/devops/                  @your-org/devops
+/docs/backend/                 @your-org/backend-leads
+/docs/frontend/                @your-org/frontend-leads
+/docs/runbooks/                @your-org/sre
+
+# Backend services
+/codie-backend/                @your-org/backend-leads
+/codie-backend/app/            @your-org/backend-leads
+/codie-backend/app/security/   @your-org/security
+/codie-backend/app/runtime/    @your-org/platform
+/codie-backend/app/llm/        @your-org/ml-leads
+
+# Frontend
+/codie-frontend/               @your-org/frontend-leads
+
+# Agents and prompts
+/ai-agents/                    @your-org/ml-leads
+
+# Infra/CI policies
+/infra/                        @your-org/devops
+.github/                       @your-org/devops @your-org/eng-leads
+/policy/                       @your-org/security @your-org/eng-leads

@@ -1,0 +1,1 @@
+export default function Runtime(){return (<div className='container'><div className='card'><h2 className='text-lg font-semibold'>Runtime Analytics</h2><p className='mt-2 text-sm text-neutral-300'>Performance metrics and anomaly flags will render here.</p></div></div>);}

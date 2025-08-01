@@ -1,0 +1,31 @@
+fastapi==0.111.0
+uvicorn[standard]==0.30.0
+pydantic==2.7.4
+pydantic-settings==2.3.4
+python-multipart==0.0.9
+httpx==0.27.0
+requests==2.32.3
+
+# Auth / Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Data / DB
+SQLAlchemy==2.0.32
+psycopg[binary]==3.2.1
+alembic==1.13.2
+
+# Caching / Queue (placeholder; choose Dramatiq or Celery later)
+redis==5.0.8
+
+# Observability
+opentelemetry-api==1.27.0
+opentelemetry-sdk==1.27.0
+opentelemetry-instrumentation-fastapi==0.48b0
+prometheus-client==0.20.0
+
+# Lint / Dev
+ruff==0.5.6
+black==24.4.2
+mypy==1.10.0
+types-requests==2.32.0.20240712

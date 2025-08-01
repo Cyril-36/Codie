@@ -1,0 +1,19 @@
+extends: ["spectral:recommended"]
+rules:
+  operation-operationId: true
+  info-contact: warn
+  tags-name-casing:
+    description: Tags should be kebab-case
+    severity: warn
+    given: "$.tags[*].name"
+    then:
+      function: casing
+      functionOptions:
+        type: kebab
+  no-200-only:
+    description: Operations should document error responses
+    severity: warn
+    given: "$.paths[*][*].responses"
+    then:
+      function: truthy
+      field: "400"

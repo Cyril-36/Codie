@@ -1,0 +1,1 @@
+export default function Settings(){return (<div className='container'><div className='card'><h2 className='text-lg font-semibold'>Settings</h2><p className='mt-2 text-sm text-neutral-300'>Integrations, feature flags, and preferences go here.</p></div></div>);}

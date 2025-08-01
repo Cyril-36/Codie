@@ -1,0 +1,1 @@
+export default function Security(){return (<div className='container'><div className='card'><h2 className='text-lg font-semibold'>Security</h2><p className='mt-2 text-sm text-neutral-300'>CVE-enriched findings and remediation patches will appear here.</p></div></div>);}

@@ -1,0 +1,54 @@
+name: openapi-export-and-lint
+on:
+  pull_request:
+    paths:
+      - "codie-backend/**"
+      - "docs/openapi/**"
+      - ".spectral.yaml"
+      - "redocly.yaml"
+  push:
+    branches: [main]
+    paths:
+      - "codie-backend/**"
+      - "docs/openapi/**"
+jobs:
+  openapi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - name: Install backend deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r codie-backend/requirements.txt
+      - name: Export OpenAPI
+        run: python codie-backend/app/openapi_export.py -o docs/openapi/openapi.json
+      - name: Upload OpenAPI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi.json
+          path: docs/openapi/openapi.json
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install Spectral & Redocly
+        run: npm i -g @stoplight/spectral-cli @redocly/cli
+      - name: Spectral lint
+        run: spectral lint docs/openapi/openapi.json -r .spectral.yaml
+      - name: Redocly diff (PR vs base)
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.sha }}
+        run: |
+          mkdir -p /tmp/base
+          git fetch origin $BASE_REF
+          git --work-tree=/tmp/base checkout $BASE_REF -- docs/openapi/openapi.json || true
+          if [ -f /tmp/base/docs/openapi/openapi.json ]; then
+            redocly diff /tmp/base/docs/openapi/openapi.json docs/openapi/openapi.json || true
+          else
+            echo "No base openapi.json to diff against."
+          fi

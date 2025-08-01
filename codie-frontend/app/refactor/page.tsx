@@ -1,0 +1,1 @@
+export default function Refactor(){return (<div className='container'><div className='card'><h2 className='text-lg font-semibold'>Refactor Planner</h2><p className='mt-2 text-sm text-neutral-300'>ROI-ranked refactor suggestions will list here.</p></div></div>);}

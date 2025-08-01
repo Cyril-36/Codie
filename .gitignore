@@ -1,0 +1,50 @@
+# Node
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.vercel/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv/
+venv/
+pip-wheel-metadata/
+dist/
+build/
+.eggs/
+*.egg-info/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Coverage / Tests / Reports
+coverage/
+.coverage
+.pytest_cache/
+junit.xml
+reports/
+artifacts/
+
+# Containers
+docker-data/
+.local/
+docs/openapi/*.tmp
+.venv
+__pycache__/

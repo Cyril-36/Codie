@@ -1,0 +1,1 @@
+export default function Intelligence(){return (<div className='container'><div className='card'><h2 className='text-lg font-semibold'>Repository Intelligence</h2><p className='mt-2 text-sm text-neutral-300'>Call graph and Hotspots visualization will appear here.</p></div></div>);}
