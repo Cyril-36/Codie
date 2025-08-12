@@ -1,19 +1,8 @@
-<div align="center">
-  <div style="background: url('.github/assets/codie-banner.png') center/cover; padding: 60px 0; border-radius: 15px; margin-bottom: 30px;">
-    <h1 style="color: white; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
-      Codie — AI Code Review Assistant
-    </h1>
-    <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 18px;">
-      Secure, efficient, and explainable AI platform for end-to-end code quality
-    </p>
-  </div>
-</div>
+# Codie — AI Code Review Assistant
 
-<p align="center">
-  <img alt="Custom Codie Banner" src=".github/assets/codie-banner.png" style="display: none;" />
-</p>
+Secure, efficient, and explainable AI platform for end-to-end code quality
 
-[![Backend CI](https://img.shields.io/github/actions/workflow/status/Cyril-36/Codie/backend.yml?branch=main&label=Backend%20CI&logo=github)](https://github.com/Cyril-36/Codie/actions/workflows/backend.yml) [![Frontend CI](https://img.shields.io/github/actions/workflow/status/Cyril-36/Codie/frontend.yml?branch=main&label=Frontend%20CI&logo=github)](https://github.com/Cyril-36/Codie/actions/workflows/frontend.yml) [![OpenAPI CI](https://img.shields.io/github/actions/workflow/status/Cyril-36/Codie/openapi.yml?branch=main&label=OpenAPI%20CI&logo=github)](https://github.com/Cyril-36/Codie/actions/workflows/openapi.yml) [![Docs CI](https://img.shields.io/github/actions/workflow/status/Cyril-36/Codie/docs.yml?branch=main&label=Docs%20CI&logo=github)](https://github.com/Cyril-36/Codie/actions/workflows/docs.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/) [![Node.js 18+](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/) [![Docker Ready](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/) [![Node.js 18+](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/) [![Docker Ready](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
 
 ---
 
@@ -35,46 +24,50 @@
 ```mermaid
 graph TB
     subgraph "User Interface"
-        UI["🎨 Next.js Frontend<br/>Monaco Editor + D3 Viz"]
+        UI["🎨 UI<br/>Monaco Editor + D3 Viz"]
     end
     
     subgraph "API Gateway"
-        GW["🚪 FastAPI Gateway<br/>Authentication & Routing"]
+        GW["🚪 API Gateway<br/>Authentication & Routing"]
     end
     
     subgraph "Core Services"
-        AS["🔍 Analysis Service<br/>AST + Runtime Profiling"]
-        RS["📊 Review Service<br/>LLM + Style ML"]
-        TS["🧪 Test Generation<br/>Diffblue + GPT"]
-        SS["🛡️ Security Service<br/>CVE + SAST"]
+        AUTH["🔐 Security<br/>User Management"]
+        ANALYSIS["🔍 Analysis<br/>Static & Runtime"]
+        AI["🤖 AI Orchestrator<br/>LLM Integration"]
+        REVIEW["📝 Review<br/>Code Analysis"]
+    end
+    
+    subgraph "Testing & Quality"
+        TEST["🧪 Tests<br/>Generation & Execution"]
+        METRICS["📊 Metrics<br/>Quality Scoring"]
     end
     
     subgraph "Data Layer"
-        PG[("📊 PostgreSQL<br/>Analysis Results")]
-        RD[("🔴 Redis<br/>Cache & Queues")]
-        S3[("📦 MinIO<br/>Artifacts & Reports")]
+        DB[("🐘 PostgreSQL<br/>Application Data")]
+        CACHE[("🔴 Redis<br/>Session & Cache")]
+        STORAGE[("📦 MinIO<br/>File Storage")]
     end
     
     UI --> GW
-    GW --> AS
-    GW --> RS
-    GW --> TS
-    GW --> SS
+    GW --> AUTH
+    GW --> ANALYSIS
+    GW --> AI
+    GW --> REVIEW
     
-    AS --> PG
-    RS --> PG
-    TS --> PG
-    SS --> PG
+    ANALYSIS --> TEST
+    AI --> REVIEW
+    REVIEW --> METRICS
     
-    AS --> RD
-    RS --> RD
-    
-    AS --> S3
-    RS --> S3
-    TS --> S3
+    AUTH --> DB
+    ANALYSIS --> DB
+    AI --> CACHE
+    REVIEW --> DB
+    TEST --> STORAGE
+    METRICS --> DB
 ```
 
-Architecture diagram showing the core components and data flow
+_Architecture diagram showing the core components and data flow_
 
 ## 📁 Monorepo Structure
 
@@ -144,29 +137,44 @@ Codie/
 ## 🛠️ Tech Stack
 
 ### Backend
-• **Framework**: FastAPI • **Language**: Python 3.11+ • **Database**: PostgreSQL • **Cache**: Redis • **Storage**: MinIO • **Container**: Docker
+• **Framework:** FastAPI  
+• **Language:** Python 3.11+  
+• **Database:** PostgreSQL  
+• **Cache:** Redis  
+• **Storage:** MinIO  
+• **Container:** Docker  
 
 ### Frontend
-• **Framework**: Next.js/React • **Styling**: Tailwind CSS • **Components**: Radix UI • **Editor**: Monaco • **Visualization**: D3, VisX
+• **Framework:** Next.js/React  
+• **Styling:** Tailwind CSS  
+• **Components:** Radix UI  
+• **Editor:** Monaco  
+• **Visualization:** D3, VisX  
 
 ### AI & ML
-• **LLM Integration**: GPT-4, Claude • **Code Analysis**: AST parsing • **Test Generation**: Diffblue (Java) • **Style Learning**: Custom ML models
+• **LLM Integration:** GPT-4, Claude  
+• **Code Analysis:** AST parsing  
+• **Test Generation:** Diffblue (Java)  
+• **Style Learning:** Custom ML models  
 
 ### DevOps & Infrastructure
-• **Containerization**: Docker, Docker Compose • **Orchestration**: Kubernetes • **CI/CD**: GitHub Actions • **Monitoring**: Custom metrics
+• **Containerization:** Docker, Docker Compose  
+• **Orchestration:** Kubernetes  
+• **CI/CD:** GitHub Actions  
+• **Monitoring:** Custom metrics  
 
 ## 📸 Screenshots
 
 ### 🏠 Dashboard Overview
-*Coming soon - Dashboard interface*
+_Coming soon - Dashboard interface_
 
 ### 📊 Code Analysis Report
-*Coming soon - Analysis report view*
+_Coming soon - Analysis report view_
 
 ### 💬 AI Chat Interface
-*Coming soon - AI chat interface*
+_Coming soon - AI chat interface_
 
-*Screenshots will be updated with actual application images*
+_Screenshots will be updated with actual application images_
 
 ## 🛡️ Security & Quality
 
@@ -240,8 +248,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [![GitHub Issues](https://img.shields.io/github/issues/Cyril-36/Codie.svg)](https://github.com/Cyril-36/Codie/issues) [![Discussions](https://img.shields.io/github/discussions/Cyril-36/Codie.svg)](https://github.com/Cyril-36/Codie/discussions) [![Email](https://img.shields.io/badge/Email-Contact-blue.svg)](mailto:cyrilchaitanya@gmail.com)
 
 Contact Email: [cyrilchaitanya@gmail.com](mailto:cyrilchaitanya@gmail.com)
-
----
-
-**Made with ❤️ by the Codie Team**  
-*Empowering developers with intelligent code review*
