@@ -1,23 +1,10 @@
-<div align="center">
-
-![Codie Banner](https://via.placeholder.com/800x200/6366f1/ffffff?text=CODIE+-+AI+Code+Review+Assistant)
-
 # 🤖 Codie — AI Code Review Assistant
 
 *Secure, efficient, and explainable AI platform for end-to-end code quality*
 
-[![Backend CI](https://github.com/Cyril-36/Codie/actions/workflows/backend.yml/badge.svg)](https://github.com/Cyril-36/Codie/actions/workflows/backend.yml)
-[![Frontend CI](https://github.com/Cyril-36/Codie/actions/workflows/frontend.yml/badge.svg)](https://github.com/Cyril-36/Codie/actions/workflows/frontend.yml)
-[![OpenAPI CI](https://github.com/Cyril-36/Codie/actions/workflows/openapi.yml/badge.svg)](https://github.com/Cyril-36/Codie/actions/workflows/openapi.yml)
-[![Docs CI](https://github.com/Cyril-36/Codie/actions/workflows/docs.yml/badge.svg)](https://github.com/Cyril-36/Codie/actions/workflows/docs.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Node.js](https://img.shields.io/badge/node.js-18+-green.svg)](https://nodejs.org/)
-[![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
+[![Backend CI](https://github.com/Cyril-36/Codie/actions/workflows/backend.yml/badge.svg)](https://github.com/Cyril-36/Codie/actions/workflows/backend.yml) [![Frontend CI](https://github.com/Cyril-36/Codie/actions/workflows/frontend.yml/badge.svg)](https://github.com/Cyril-36/Codie/actions/workflows/frontend.yml) [![OpenAPI CI](https://github.com/Cyril-36/Codie/actions/workflows/openapi.yml/badge.svg)](https://github.com/Cyril-36/Codie/actions/workflows/openapi.yml) [![Docs CI](https://github.com/Cyril-36/Codie/actions/workflows/docs.yml/badge.svg)](https://github.com/Cyril-36/Codie/actions/workflows/docs.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![Node.js](https://img.shields.io/badge/node.js-18+-green.svg)](https://nodejs.org/) [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 
 ---
-
-</div>
 
 ## ✨ Key Features
 
@@ -36,16 +23,37 @@
 
 ```mermaid
 graph TB
-    A[Frontend - Next.js/React] --> B[API Gateway]
-    B --> C[Analysis Orchestration]
-    C --> D[Static Analysis]
-    C --> E[Runtime Analysis]
-    C --> F[Style ML]
-    C --> G[LLM Review]
-    C --> H[Security Enrichment]
-    I[Database - PostgreSQL] --> C
-    J[Cache - Redis] --> C
-    K[Storage - MinIO] --> C
+    subgraph "User Interface"
+        UI["🎨 Next.js Frontend<br/>Monaco Editor + D3 Viz"]
+    end
+    
+    subgraph "API Gateway"
+        GW["🚪 FastAPI Gateway<br/>Authentication & Routing"]
+    end
+    
+    subgraph "Core Services"
+        AS["🔍 Analysis Service<br/>AST + Runtime Profiling"]
+        RS["📊 Review Service<br/>LLM + Style ML"]
+        TS["🧪 Test Generation<br/>Diffblue + GPT"]
+        SS["🛡️ Security Service<br/>CVE + SAST"]
+    end
+    
+    subgraph "Data Layer"
+        PG[("📊 PostgreSQL<br/>Analysis Results")]
+        RD[("⚡ Redis<br/>Cache & Sessions")]
+        MO[("📁 MinIO<br/>Artifacts & Reports")]
+    end
+    
+    UI --> GW
+    GW --> AS
+    GW --> RS
+    GW --> TS
+    GW --> SS
+    AS --> PG
+    RS --> PG
+    TS --> MO
+    SS --> PG
+    GW --> RD
 ```
 
 *Architecture diagram showing the core components and data flow*
@@ -82,6 +90,7 @@ Codie/
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - 🐳 Docker & Docker Compose
 - 🟢 Node.js 18+
 - 🐍 Python 3.11+
@@ -108,101 +117,78 @@ Codie/
    ```
 
 4. **Access the services**
-   - 🌐 **Frontend**: http://localhost:3000
-   - 📡 **Backend API**: http://localhost:8000/docs
-   - 🗄️ **MinIO**: http://localhost:9001
-   - 🐘 **PostgreSQL**: localhost:5432
-   - 🔴 **Redis**: localhost:6379
+   - 🌐 Frontend: http://localhost:5174
+   - 📡 Backend API: http://localhost:8000/docs
+   - 🗄️ MinIO: http://localhost:9001
+   - 🐘 PostgreSQL: localhost:5432
+   - 🔴 Redis: localhost:6379
 
 ## 🛠️ Tech Stack
 
 ### Backend
-- **Framework**: FastAPI
-- **Language**: Python 3.11+
-- **Database**: PostgreSQL
-- **Cache**: Redis
-- **Storage**: MinIO
-- **Container**: Docker
+• **Framework**: FastAPI
+• **Language**: Python 3.11+
+• **Database**: PostgreSQL
+• **Cache**: Redis
+• **Storage**: MinIO
+• **Container**: Docker
 
 ### Frontend
-- **Framework**: Next.js/React
-- **Styling**: Tailwind CSS
-- **Components**: Radix UI
-- **Editor**: Monaco
-- **Visualization**: D3, VisX
+• **Framework**: Next.js/React
+• **Styling**: Tailwind CSS
+• **Components**: Radix UI
+• **Editor**: Monaco
+• **Visualization**: D3, VisX
 
 ### AI & ML
-- **LLM Integration**: GPT-4, Claude
-- **Code Analysis**: AST parsing
-- **Test Generation**: Diffblue (Java)
-- **Style Learning**: Custom ML models
+• **LLM Integration**: GPT-4, Claude
+• **Code Analysis**: AST parsing
+• **Test Generation**: Diffblue (Java)
+• **Style Learning**: Custom ML models
 
 ### DevOps & Infrastructure
-- **Containerization**: Docker, Docker Compose
-- **Orchestration**: Kubernetes
-- **CI/CD**: GitHub Actions
-- **Monitoring**: Custom metrics
+• **Containerization**: Docker, Docker Compose
+• **Orchestration**: Kubernetes
+• **CI/CD**: GitHub Actions
+• **Monitoring**: Custom metrics
 
 ## 📸 Screenshots
 
-<div align="center">
-
 ### 🏠 Dashboard Overview
-![Dashboard](https://via.placeholder.com/600x400/f3f4f6/374151?text=Dashboard+Overview)
+*Coming soon - Dashboard interface*
 
 ### 📊 Code Analysis Report
-![Analysis](https://via.placeholder.com/600x400/f3f4f6/374151?text=Code+Analysis+Report)
+*Coming soon - Analysis report view*
 
 ### 💬 AI Chat Interface
-![Chat](https://via.placeholder.com/600x400/f3f4f6/374151?text=AI+Chat+Interface)
-
-</div>
+*Coming soon - AI chat interface*
 
 *Screenshots will be updated with actual application images*
 
 ## 🛡️ Security & Quality
 
 ### Security Features
-- 🔐 **TLS encryption** in production
-- 🎫 **Least-privilege tokens**
-- 📦 **Sandboxed runtimes**
-- 🔍 **SBOM & vulnerability scans**
-- 🤐 **Secret/PII redaction** to LLMs
+
+- 🔐 TLS encryption in production
+- 🎫 Least-privilege tokens
+- 📦 Sandboxed runtimes
+- 🔍 SBOM & vulnerability scans
+- 🤐 Secret/PII redaction to LLMs
 
 ### Code Quality
-- 🐍 **Python**: ruff, black, mypy
-- 📜 **TypeScript**: ESLint, strict mode
-- 🧪 **Testing**: Unit, integration, E2E
-- 📈 **Coverage gates** enforced
+
+- 🐍 Python: ruff, black, mypy
+- 📜 TypeScript: ESLint, strict mode
+- 🧪 Testing: Unit, integration, E2E
+- 📈 Coverage gates enforced
 
 ### Documentation Governance
-- 📝 **Keep a Changelog** + SemVer
-- 📚 **Per-module CHANGELOGs**
-- 🤖 **CI-enforced docs updates**
-- 🔍 **OpenAPI sync** with Spectral lint
-- 📊 **Optional metrics**: Docs/Test Coverage, Performance, Security
 
-## 🗺️ Roadmap
-
-### 🎯 Q1 2025
-- [ ] Enhanced ML model training
-- [ ] Advanced security scanning
-- [ ] Performance optimization
-
-### 🎯 Q2 2025
-- [ ] Multi-language support expansion
-- [ ] Real-time collaboration features
-- [ ] Advanced analytics dashboard
-
-### 🎯 Q3 2025
-- [ ] Enterprise SSO integration
-- [ ] Custom rule engine
-- [ ] API marketplace
-
-### 🎯 Q4 2025
-- [ ] Mobile application
-- [ ] Advanced AI models
-- [ ] Global deployment options
+- 📝 Keep a Changelog + SemVer
+- 📚 Per-module CHANGELOGs
+- 🤖 CI-enforced docs updates
+- 🔍 OpenAPI sync with Spectral lint
+- 📊 Optional metrics: Docs/Test Coverage, Performance, Security
 
 ## 🤝 Contributing
 
@@ -236,6 +222,7 @@ npm run dev
 ```
 
 ### 📋 Contribution Guidelines
+
 - 🔄 Fork the repository
 - 🌟 Create a feature branch
 - ✅ Add tests for new features
@@ -248,18 +235,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact & Support
 
-<div align="center">
-
 ### 💬 Get in Touch
 
-[![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-red?logo=github)](https://github.com/Cyril-36/Codie/issues)
-[![Discussions](https://img.shields.io/badge/GitHub-Discussions-blue?logo=github)](https://github.com/Cyril-36/Codie/discussions)
-[![Email](https://img.shields.io/badge/Email-Contact-green?logo=gmail)](mailto:your-email@domain.com)
+[![GitHub Issues](https://img.shields.io/github/issues/Cyril-36/Codie.svg)](https://github.com/Cyril-36/Codie/issues) [![Discussions](https://img.shields.io/badge/GitHub-Discussions-blue.svg)](https://github.com/Cyril-36/Codie/discussions) [![Email](https://img.shields.io/badge/Email-Contact-red.svg)](mailto:cyrilchaitanya@gmail.com)
+
+**Contact Email:** [cyrilchaitanya@gmail.com](mailto:cyrilchaitanya@gmail.com)
 
 ---
 
-**Made with ❤️ by the Codie Team**
-
+*Made with ❤️ by the Codie Team*  
 *Empowering developers with intelligent code review*
-
-</div>
