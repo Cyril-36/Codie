@@ -1,0 +1,1032 @@
+/* ========================================
+   Global Focus Management
+   ======================================== */
+
+:where(button, [role="button"], a, input, select, textarea, [tabindex]) :focus-visible {
+  outline: none !important;
+  box-shadow: var(--focus-ring) !important;
+}
+
+/* Enhanced focus states for specific components */
+.focus-ring {
+  outline: none;
+  transition: box-shadow var(--dur-xs) var(--ease-emphasized);
+}
+
+.focus-ring:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.focus-ring-strong:focus-visible {
+  box-shadow: var(--focus-ring-strong);
+}
+
+/* ========================================
+   Sticky Header
+   ======================================== */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--background);
+  transition: box-shadow var(--dur-sm) var(--ease-smooth);
+}
+
+.header.scrolled {
+  box-shadow: var(--shadow-sm);
+}
+
+/* ========================================
+   Enhanced Badge System
+   ======================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  transition: all var(--dur-xs) var(--ease-smooth);
+}
+
+.badge:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs);
+}
+
+/* Priority Badge Variants with proper contrast */
+.badge-priority-high {
+  background: var(--badge-high-bg);
+  color: var(--badge-high-fg);
+  border-color: color-mix(in oklab, var(--destructive) 40%, var(--background) 60%);
+}
+
+.badge-priority-medium {
+  background: var(--badge-med-bg);
+  color: var(--badge-med-fg);
+  border-color: color-mix(in oklab, var(--warning) 40%, var(--background) 60%);
+}
+
+.badge-priority-low {
+  background: var(--badge-low-bg);
+  color: var(--badge-low-bg);
+  border-color: color-mix(in oklab, var(--good) 40%, var(--background) 60%);
+}
+
+/* Status Badge Variants */
+.badge-success {
+  background: color-mix(in oklab, var(--good) 16%, var(--background) 84%);
+  color: var(--good);
+  border-color: color-mix(in oklab, var(--good) 40%, var(--background) 60%);
+}
+
+.badge-warning {
+  background: color-mix(in oklab, var(--warning) 16%, var(--background) 84%);
+  color: var(--warning-foreground);
+  border-color: color-mix(in oklab, var(--warning) 40%, var(--background) 60%);
+}
+
+.badge-error {
+  background: color-mix(in oklab, var(--destructive) 16%, var(--background) 84%);
+  color: var(--destructive-foreground);
+  border-color: color-mix(in oklab, var(--destructive) 40%, var(--background) 60%);
+}
+
+.badge-info {
+  background: color-mix(in oklab, var(--primary) 16%, var(--background) 84%);
+  color: var(--primary-foreground);
+  border-color: color-mix(in oklab, var(--primary) 40%, var(--background) 60%);
+}
+
+/* ========================================
+   Enhanced Tab System
+   ======================================== */
+
+.tab-list {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.tab-button {
+  background-color: transparent;
+  border: none;
+  color: var(--muted-foreground);
+  text-transform: capitalize;
+  font-weight: 500;
+  transition: all var(--anim-btn-hover);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius) var(--radius) 0 0;
+  cursor: pointer;
+  font-size: 14px;
+  position: relative;
+}
+
+.tab-button:hover {
+  background-color: var(--muted);
+  color: var(--foreground);
+}
+
+.tab-button.active {
+  background-color: var(--tab-active-bg);
+  color: var(--tab-active-fg);
+  border-color: var(--tab-active-bg);
+  font-weight: 600;
+}
+
+.tab-button.active:hover {
+  background-color: var(--tab-active-bg);
+  border-color: var(--tab-active-bg);
+}
+
+.tab-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Tab underline variants */
+.tab-button.tab-underline.active::after {
+  background: var(--primary);
+}
+
+.tab-button.tab-slide.active::after {
+  background: var(--primary);
+}
+
+.tab-button.tab-indicator.active::before {
+  background: var(--primary);
+}
+
+/* Tab indicator line for premium feel */
+.tab-indicator-line {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 1px;
+  transition: left 0.3s ease, width 0.3s ease;
+}
+
+/* Tab panel */
+.tab-panel {
+  padding: var(--space-4) 0;
+}
+
+/* ========================================
+   Enhanced Button System
+   ======================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: var(--shadow-xs);
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all var(--anim-btn-hover);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn:active {
+  transform: translateY(0);
+  transition: transform var(--anim-btn-press);
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Button variants */
+.btn-secondary {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.btn-outline:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--foreground);
+}
+
+.btn-ghost:hover {
+  background: var(--accent);
+}
+
+.btn-destructive {
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+.btn-destructive:hover {
+  background: color-mix(in oklab, var(--destructive) 85%, black 15%);
+}
+
+/* Button sizes */
+.btn-sm {
+  padding: var(--space-2) var(--space-3);
+  font-size: 12px;
+}
+
+.btn-lg {
+  padding: var(--space-4) var(--space-6);
+  font-size: 16px;
+}
+
+/* Button with motion classes */
+.btn.btn-anim {
+  /* Inherits from motion.css */
+  /* Placeholder to prevent empty ruleset */
+}
+
+.btn.btn-ripple {
+  /* Inherits from motion.css */
+  /* Placeholder to prevent empty ruleset */
+}
+
+.btn.btn-scale {
+  /* Inherits from motion.css */
+  /* Placeholder to prevent empty ruleset */
+}
+
+/* Theme-aware button text color overrides */
+[data-theme="light"] button,
+.light button {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] button[class*="text-"],
+.light button[class*="text-"] {
+  color: var(--text-primary) !important;
+}
+
+/* Ensure secondary and outline buttons have proper text color in light mode */
+[data-theme="light"] button.bg-bg-tertiary,
+.light button.bg-bg-tertiary {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] button.bg-transparent,
+.light button.bg-transparent {
+  color: var(--text-primary) !important;
+}
+
+/* Additional button text color fixes for specific variants */
+[data-theme="light"] button[class*="bg-bg-tertiary"],
+.light button[class*="bg-bg-tertiary"] {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] button[class*="bg-transparent"],
+.light button[class*="bg-transparent"] {
+  color: var(--text-primary) !important;
+}
+
+/* Fix for buttons with specific class combinations */
+[data-theme="light"] button.bg-bg-tertiary.hover\:bg-bg-hover,
+.light button.bg-bg-tertiary.hover\:bg-bg-hover {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] button.bg-transparent.hover\:bg-bg-hover,
+.light button.bg-transparent.hover\:bg-bg-hover {
+  color: var(--text-primary) !important;
+}
+
+/* Comprehensive button text color fixes for all variants */
+[data-theme="light"] button,
+.light button {
+  color: var(--text-primary) !important;
+}
+
+/* Override for primary buttons with gradient backgrounds */
+[data-theme="light"] button[class*="bg-brand-gradient"],
+.light button[class*="bg-brand-gradient"] {
+  color: white !important;
+}
+
+/* Override for danger/destructive buttons */
+[data-theme="light"] button[class*="bg-error"],
+.light button[class*="bg-error"] {
+  color: white !important;
+}
+
+/* Override for accent buttons */
+[data-theme="light"] button[class*="bg-brand-accent"],
+.light button[class*="bg-brand-accent"] {
+  color: white !important;
+}
+
+/* Ensure proper contrast for all button text in light mode */
+@media (prefers-color-scheme: light) {
+  button:not([class*="bg-brand-gradient"]):not([class*="bg-error"]):not([class*="bg-brand-accent"]) {
+    color: var(--text-primary) !important;
+  }
+}
+
+/* High-specificity overrides for button text colors in light mode */
+[data-theme="light"] button:not([class*="bg-brand-gradient"]):not([class*="bg-error"]):not([class*="bg-brand-accent"]),
+.light button:not([class*="bg-brand-gradient"]):not([class*="bg-error"]):not([class*="bg-brand-accent"]) {
+  color: var(--text-primary) !important;
+}
+
+/* Force button text colors for specific problematic buttons */
+[data-theme="light"] button.btn-anim,
+.light button.btn-anim {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] button[class*="btn-anim"],
+.light button[class*="btn-anim"] {
+  color: var(--text-primary) !important;
+}
+
+/* ========================================
+   Enhanced Card System
+   ======================================== */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--elevation-card);
+  transition: all var(--anim-btn-hover);
+  overflow: hidden;
+}
+
+.card:hover {
+  border-color: color-mix(in oklab, var(--primary) 22%, var(--border) 78%);
+}
+
+.card:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring), var(--elevation-card-hover);
+}
+
+/* Card variants with motion */
+.card.card-elevate {
+  /* Inherits from motion.css */
+  /* Placeholder to prevent empty ruleset */
+}
+
+.card.card-tilt {
+  /* Inherits from motion.css */
+  /* Placeholder to prevent empty ruleset */
+}
+
+.card.card-hover {
+  transition: all var(--dur-sm) var(--ease-smooth);
+}
+
+.card.card-hover:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--elevation-card-hover);
+}
+
+/* Card with elevation */
+.card.elevate {
+  /* Inherits from motion.css */
+  /* Placeholder to prevent empty ruleset */
+}
+
+/* ========================================
+   Enhanced Form System
+   ======================================== */
+
+.form-input {
+  width: 100%;
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  color: var(--foreground);
+  font-size: 14px;
+  outline: none;
+  transition: all var(--anim-input-focus);
+}
+
+.form-input:focus {
+  border-color: var(--ring);
+  box-shadow: var(--focus-ring);
+}
+
+.form-input::placeholder {
+  color: var(--muted-foreground);
+}
+
+/* Input with motion classes */
+.form-input.input-focus-anim:focus {
+  transform: scale(1.01);
+}
+
+.form-input.input-float {
+  /* Inherits from motion.css */
+  /* Placeholder to prevent empty ruleset */
+}
+
+/* ========================================
+   Enhanced Performance Tiles
+   ======================================== */
+
+.performance-tile {
+  background: var(--tile-neutral);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  transition: all var(--dur-sm) var(--ease-smooth);
+}
+
+.performance-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--elevation-card-hover);
+}
+
+.performance-tile.positive {
+  background: var(--tile-positive);
+  border-color: color-mix(in oklab, var(--good) 40%, var(--background) 60%);
+}
+
+.performance-tile.negative {
+  background: var(--tile-negative);
+  border-color: color-mix(in oklab, var(--bad) 40%, var(--background) 60%);
+}
+
+.performance-tile .value {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.performance-tile .unit {
+  font-size: 14px;
+  color: var(--muted-foreground);
+  margin-left: 4px;
+}
+
+.performance-tile .label {
+  font-size: 14px;
+  color: var(--muted-foreground);
+  margin-top: var(--space-2);
+}
+
+/* ========================================
+   Enhanced Loading States
+   ======================================== */
+
+.loading-skeleton {
+  background: var(--muted);
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+}
+
+.loading-skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255,255,255,0.1), 
+    transparent);
+  animation: shimmer var(--anim-skeleton);
+}
+
+/* Loading spinner */
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--muted);
+  border-top: 2px solid var(--primary);
+  border-radius: 50%;
+  animation: spin var(--anim-spinner) linear infinite;
+}
+
+/* Loading dots */
+.loading-dots {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.loading-dots > div {
+  width: 8px;
+  height: 8px;
+  background: var(--muted-foreground);
+  border-radius: 50%;
+  animation: bounce var(--dur-sm) var(--ease-bounce) infinite;
+}
+
+.loading-dots > div:nth-child(2) { animation-delay: var(--stagger-sm); }
+.loading-dots > div:nth-child(3) { animation-delay: calc(var(--stagger-sm) * 2); }
+
+/* ========================================
+   Enhanced Status Indicators
+   ======================================== */
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-indicator.success {
+  background: color-mix(in oklab, var(--good) 16%, var(--background) 84%);
+  color: var(--good);
+}
+
+.status-indicator.warning {
+  background: color-mix(in oklab, var(--warning) 16%, var(--background) 84%);
+  color: var(--warning-foreground);
+}
+
+.status-indicator.error {
+  background: color-mix(in oklab, var(--destructive) 16%, var(--background) 84%);
+  color: var(--destructive-foreground);
+}
+
+.status-indicator.info {
+  background: color-mix(in oklab, var(--primary) 16%, var(--background) 84%);
+  color: var(--primary-foreground);
+}
+
+/* ========================================
+   Enhanced Progress Bars
+   ======================================== */
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--muted);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar .fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+  transition: width var(--dur-md) var(--ease-smooth);
+  position: relative;
+}
+
+.progress-bar .fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255,255,255,0.2), 
+    transparent);
+  animation: shimmer var(--anim-skeleton);
+}
+
+/* Progress bar variants */
+.progress-bar.success .fill {
+  background: var(--good);
+}
+
+.progress-bar.warning .fill {
+  background: var(--warning);
+}
+
+.progress-bar.error .fill {
+  background: var(--destructive);
+}
+
+/* ========================================
+   Enhanced Tooltips
+   ======================================== */
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltip-content {
+  visibility: hidden;
+  opacity: 0;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  text-align: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--elevation-popover);
+  position: absolute;
+  z-index: 1000;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all var(--dur-sm) var(--ease-smooth);
+  white-space: nowrap;
+}
+
+.tooltip .tooltip-content::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--popover) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltip-content {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* ========================================
+   Enhanced Modals and Overlays
+   ======================================== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity var(--dur-sm) var(--ease-smooth);
+}
+
+.modal-overlay.visible {
+  opacity: 1;
+}
+
+.modal-content {
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elevation-modal);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  transform: scale(0.95) translateY(20px);
+  transition: all var(--dur-sm) var(--ease-bounce);
+}
+
+.modal-overlay.visible .modal-content {
+  transform: scale(1) translateY(0);
+}
+
+/* ========================================
+   Enhanced Notifications
+   ======================================== */
+
+.notification {
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--elevation-popover);
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+  transform: translateX(100%);
+  transition: all var(--dur-sm) var(--ease-emphasized);
+}
+
+.notification.visible {
+  transform: translateX(0);
+}
+
+.notification.success {
+  border-left: 4px solid var(--good);
+}
+
+.notification.warning {
+  border-left: 4px solid var(--warning);
+}
+
+.notification.error {
+  border-left: 4px solid var(--destructive);
+}
+
+.notification.info {
+  border-left: 4px solid var(--primary);
+}
+
+/* ========================================
+   Enhanced Data Tables
+   ======================================== */
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--elevation-card);
+}
+
+.data-table th {
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-weight: 600;
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  transition: background-color var(--dur-xs) var(--ease-smooth);
+}
+
+.data-table tbody tr:hover td {
+  background: var(--muted);
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ========================================
+   Enhanced Navigation
+   ======================================== */
+
+/* Sidebar Layout */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100dvh;
+  background: var(--sidebar);
+  color: var(--sidebar-foreground);
+}
+.sidebar-header { padding: var(--space-6) var(--space-5); flex: 0 0 auto; }
+.sidebar-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-3) var(--space-2);
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(var(--space-8) + 56px);
+  scroll-padding-bottom: calc(var(--space-8) + 56px);
+}
+.sidebar-footer {
+  flex: 0 0 auto;
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--sidebar-border);
+  background: color-mix(in oklab, var(--sidebar) 92%, black 8%);
+}
+
+/* Nav items */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-lg);
+  color: var(--foreground);
+}
+.nav-item.active {
+  background: var(--highlight);
+  color: var(--highlight-foreground);
+  box-shadow: var(--shadow-xs);
+}
+.nav-item .label {
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-section + .nav-section { margin-top: var(--space-4); }
+
+@media (max-width: 640px) {
+  .nav-item { padding: 8px 10px; }
+}
+
+/* ========================================
+   Enhanced Breadcrumbs
+   ======================================== */
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.breadcrumb-item:not(:last-child)::after {
+  content: "/";
+  color: var(--border);
+  margin-left: var(--space-2);
+}
+
+.breadcrumb-link {
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: color var(--dur-xs) var(--ease-smooth);
+}
+
+.breadcrumb-link:hover {
+  color: var(--foreground);
+}
+
+.breadcrumb-current {
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+/* ========================================
+   Enhanced Pagination
+   ======================================== */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.pagination-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--foreground);
+  text-decoration: none;
+  transition: all var(--dur-xs) var(--ease-smooth);
+  cursor: pointer;
+}
+
+.pagination-item:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.pagination-item.active {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.pagination-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-item:disabled:hover {
+  background: var(--card);
+  border-color: var(--border);
+}
+
+/* Dark mode: strengthen scroll gradients a bit for visibility */
+@media (prefers-color-scheme: dark) {
+  .scrollable::before {
+    background: linear-gradient(to bottom, color-mix(in oklab, var(--background) 92%, black 8%) 0%, transparent 100%);
+  }
+  .scrollable::after {
+    background: linear-gradient(to top, color-mix(in oklab, var(--background) 92%, black 8%) 0%, transparent 100%);
+  }
+}
+
+/* Sidebar active density tweaks on narrow widths */
+@media (max-width: 768px) {
+  .nav-item { padding: 8px 10px; }
+  .nav-item.active { border-radius: var(--radius-lg); }
+  .icon-wrap { padding: 6px; }
+}
+
+/* Icon-only buttons: clear focus ring */
+.icon-button,
+button[aria-label]:not([aria-label=""]) {
+  position: relative;
+}
+.icon-button:focus-visible,
+button[aria-label]:not([aria-label=""]):focus-visible {
+  box-shadow: var(--focus-ring) !important;
+  outline: none !important;
+}
+
+/* KPI spacing rhythm (4/8px) */
+.kpi { display: grid; grid-auto-rows: min-content; row-gap: 8px; }
+.kpi .label { margin-top: 4px; }
+
+/* Sticky subheader utility */
+.sticky-subheader {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--background);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--dur-sm) var(--ease-smooth);
+}
+
+/* Sidebar surface styles driven by global tokens */
+.sidebar-surface {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-right: 1px solid var(--border);
+}
+.sidebar-surface .item-active {
+  background: var(--bg-selected);
+  color: var(--foreground);
+}
+.sidebar-surface .sidebar-scroll::before {
+  background: linear-gradient(to bottom, var(--bg-secondary) 0%, transparent 100%);
+}
+.sidebar-surface .sidebar-scroll::after {
+  background: linear-gradient(to top, var(--bg-secondary) 0%, transparent 100%);
+}
+
+/* Defensive guard: ensure sidebar always uses theme tokens (prevents stray overrides) */
+.sidebar-surface {
+  background: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+  border-right: 1px solid var(--border) !important;
+}
+.sidebar-surface .item-active {
+  background: var(--bg-selected) !important;
+  color: var(--foreground) !important;
+}
+.sidebar-surface .sidebar-scroll::before {
+  background: linear-gradient(to bottom, var(--bg-secondary) 0%, transparent 100%) !important;
+}
+.sidebar-surface .sidebar-scroll::after {
+  background: linear-gradient(to top, var(--bg-secondary) 0%, transparent 100%) !important;
+}
+
+@media (prefers-color-scheme: light) {
+  .card .text-muted-foreground {
+    color: color-mix(in oklab, var(--muted-foreground) 90%, var(--foreground) 10%);
+  }
+}
+
+/* Refactor page – light-mode readability tweaks */
+@media (prefers-color-scheme: light) {
+  .refactor-page .refactor-subtext {
+    color: color-mix(in oklab, var(--muted-foreground) 85%, var(--foreground) 15%);
+  }
+  .refactor-page input::placeholder,
+  .refactor-page textarea::placeholder,
+  .refactor-page [role="textbox"]::placeholder {
+    color: color-mix(in oklab, var(--muted-foreground) 80%, var(--foreground) 20%);
+    opacity: 1; /* ensure not too faint */
+  }
+  .refactor-page .card input,
+  .refactor-page .card textarea,
+  .refactor-page .card [role="textbox"] {
+    border: 1px solid var(--border);
+  }
+}
+

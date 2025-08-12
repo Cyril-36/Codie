@@ -1,0 +1,120 @@
+# Dependabot configuration for Codie Enterprise Platform
+# Automatically updates dependencies and creates PRs for security vulnerabilities
+
+version: 2
+updates:
+  # Python backend dependencies
+  - package-ecosystem: "pip"
+    directory: "/src/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "codie-backend-team"
+    assignees:
+      - "codie-maintainers"
+    commit-message:
+      prefix: "deps(backend)"
+      prefix-development: "deps-dev(backend)"
+    labels:
+      - "dependencies"
+      - "backend"
+      - "python"
+    allow:
+      - dependency-type: "all"
+    ignore:
+      # Ignore major version updates for critical packages
+      - dependency-name: "fastapi"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "sqlalchemy"
+        update-types: ["version-update:semver-major"]
+
+  # Frontend Node.js dependencies
+  - package-ecosystem: "npm"
+    directory: "/src/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday" 
+      time: "10:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "codie-frontend-team"
+    assignees:
+      - "codie-maintainers"
+    commit-message:
+      prefix: "deps(frontend)"
+      prefix-development: "deps-dev(frontend)"
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "javascript"
+    allow:
+      - dependency-type: "all"
+    ignore:
+      # Ignore major version updates for critical packages
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "vite"
+        update-types: ["version-update:semver-major"]
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/src/backend"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "codie-devops-team"
+    assignees:
+      - "codie-maintainers"
+    commit-message:
+      prefix: "deps(docker)"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "backend"
+
+  - package-ecosystem: "docker"
+    directory: "/src/frontend"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "10:00"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "codie-devops-team"
+    assignees:
+      - "codie-maintainers"
+    commit-message:
+      prefix: "deps(docker)"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "frontend"
+
+  # GitHub Actions workflow dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "codie-devops-team"
+    assignees:
+      - "codie-maintainers"
+    commit-message:
+      prefix: "deps(actions)"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "ci-cd"
+
+# Security updates configuration
+# Dependabot will automatically create PRs for security vulnerabilities
+# regardless of the schedule above

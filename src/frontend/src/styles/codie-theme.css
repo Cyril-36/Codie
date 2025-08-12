@@ -1,0 +1,545 @@
+/* ========================================
+   Codie Enhanced Design System
+   Integrates all animation snippets and design tokens
+   ======================================== */
+
+:root {
+  /* Color system - Modern OKLCH with semantic naming */
+  --background: oklch(0.985 0 0);
+  --foreground: oklch(0.22 0 0);
+  --card: oklch(0.99 0 0);
+  --card-foreground: var(--foreground);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--foreground);
+
+  /* Brand accents - Avoid blue/indigo for uniqueness */
+  --primary: oklch(0.64 0.09 180); /* Teal */
+  --primary-foreground: oklch(0.15 0.02 180);
+  --highlight: oklch(0.62 0.17 300); /* Purple */
+  --highlight-foreground: oklch(0.15 0.02 300);
+  --warning: oklch(0.82 0.18 80); /* Amber */
+  --warning-foreground: oklch(0.22 0.04 80);
+
+  /* Semantic colors */
+  --secondary: oklch(0.96 0 0);
+  --secondary-foreground: oklch(0.36 0 0);
+  --muted: oklch(0.95 0 0);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.94 0.02 260);
+  --accent-foreground: var(--foreground);
+  --destructive: oklch(0.55 0.18 27);
+  --destructive-foreground: oklch(0.99 0 0);
+
+  /* Surfaces & controls */
+  --border: oklch(0.9 0 0);
+  --input: oklch(0.93 0 0);
+  --ring: color-mix(in oklab, var(--primary) 60%, black 0%);
+
+  /* Charts palette */
+  --chart-1: var(--primary);
+  --chart-2: oklch(0.72 0.1 200);
+  --chart-3: var(--highlight);
+  --chart-4: oklch(0.72 0.12 320);
+  --chart-5: var(--warning);
+
+  /* Sidebar */
+  --sidebar: oklch(0.98 0 0);
+  --sidebar-foreground: oklch(0.25 0 0);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  /* Typography */
+  --font-sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-serif: Merriweather, ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Radii */
+  --radius-2xs: 4px;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius: var(--radius-sm);
+
+  /* Spacing (8px grid) */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Elevation / Shadows (crisp, low-noise) */
+  --shadow-2xs: 0 1px 0 rgba(0,0,0,0.04);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 4px 10px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 20px rgba(0,0,0,0.10), 0 4px 10px rgba(0,0,0,0.08);
+  --shadow-lg: 0 14px 28px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.10);
+  --shadow-xl: 0 24px 48px rgba(0,0,0,0.14), 0 12px 24px rgba(0,0,0,0.12);
+  --shadow-2xl: 0 40px 64px rgba(0,0,0,0.16);
+
+  /* Motion - CSS variables with guidance */
+  --ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  --dur-2xs: 90ms;   /* taps, ripples */
+  --dur-xs: 140ms;   /* hovers, chips */
+  --dur-sm: 200ms;   /* buttons, cards */
+  --dur-md: 300ms;   /* panels, menus */
+  --dur-lg: 450ms;   /* charts enter */
+  --dur-xl: 600ms;   /* diff apply, drawer */
+
+  --stagger-sm: 60ms;
+  --stagger-md: 120ms;
+
+  /* Focus and outlines */
+  --focus-ring: 0 0 0 3px color-mix(in oklab, var(--primary) 22%, white 78%);
+  --focus-ring-strong: 0 0 0 3px color-mix(in oklab, var(--highlight) 28%, white 72%);
+
+  /* Density & grid */
+  --container-max: 1440px;
+  --grid-gap: 16px;
+
+  /* Charts detail */
+  --gridline: oklch(0.92 0 0);
+  --axis: oklch(0.36 0 0);
+  --good: oklch(0.75 0.11 160);
+  --caution: var(--warning);
+  --bad: oklch(0.58 0.19 28);
+
+  /* Animation micro-specs */
+  --anim-userMsg: var(--dur-sm) var(--ease-standard);
+  --anim-aiMsg: var(--dur-lg) var(--ease-bounce);
+  --anim-typing: 1400ms ease-in-out;
+  --anim-status: var(--dur-sm) var(--ease-standard);
+  --anim-sidebar: var(--dur-md) var(--ease-emphasized);
+  --anim-overlay: var(--dur-sm) var(--ease-smooth);
+  --anim-input-focus: var(--dur-xs) var(--ease-emphasized);
+  --anim-btn-press: var(--dur-2xs) var(--ease-emphasized);
+  --anim-btn-hover: var(--dur-xs) var(--ease-smooth);
+  --anim-ripple: 400ms var(--ease-smooth);
+  --anim-chatLoad: var(--dur-md) var(--ease-standard);
+  --anim-skeleton: 2000ms ease-in-out;
+  --anim-spinner: 1000ms linear;
+  --anim-msgHover: var(--dur-xs) var(--ease-smooth);
+  --anim-msgSelect: var(--dur-xs) var(--ease-emphasized);
+  --anim-error: 400ms var(--ease-emphasized);
+  --anim-success: 600ms var(--ease-bounce);
+  --anim-autoScroll: 400ms ease;
+  --anim-scrollHint: 800ms ease-in-out;
+
+  /* Utility tokens for JS consumption */
+  --elevation-card: var(--shadow-sm);
+  --elevation-card-hover: var(--shadow);
+  --elevation-popover: var(--shadow-md);
+  --elevation-modal: var(--shadow-xl);
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0.14 0 0);
+    --foreground: oklch(0.92 0 0);
+    --card: oklch(0.18 0 0);
+    --card-foreground: var(--foreground);
+    --popover: oklch(0.16 0 0);
+    --popover-foreground: var(--foreground);
+
+    --secondary: oklch(0.22 0 0);
+    --secondary-foreground: oklch(0.88 0 0);
+    --muted: oklch(0.22 0 0);
+    --muted-foreground: oklch(0.75 0 0);
+    --accent: oklch(0.24 0.01 260);
+    --accent-foreground: var(--foreground);
+
+    --border: oklch(0.32 0 0);
+    --input: oklch(0.24 0 0);
+    --ring: color-mix(in oklab, var(--primary) 70%, white 0%);
+
+    --sidebar: oklch(0.16 0 0);
+    --sidebar-foreground: oklch(0.92 0 0);
+    --sidebar-border: oklch(0.28 0 0);
+  }
+}
+
+/* Base resets with strong specificity */
+html, body { 
+  font-family: var(--font-sans) !important; 
+  color: var(--foreground) !important; 
+  background: var(--background) !important; 
+  letter-spacing: 0 !important; 
+}
+
+h1, h2, h3, h4, h5, h6 { 
+  color: var(--foreground) !important; 
+  line-height: 1.15 !important; 
+  margin: 0 0 var(--space-4) 0 !important; 
+  font-weight: 650 !important; 
+}
+
+p { 
+  margin: 0 0 var(--space-4) 0 !important; 
+  color: color-mix(in oklab, var(--foreground) 85%, white 15%) !important; 
+}
+
+code, pre { font-family: var(--font-mono) !important; }
+
+/* Accessible focus */
+:where(button, [role="button"], a, input, select, textarea, [tabindex]) :focus-visible { 
+  outline: none !important; 
+  box-shadow: var(--focus-ring) !important; 
+}
+
+/* Data viz helpers */
+.chart-gridline { stroke: var(--gridline); }
+.chart-axis { stroke: var(--axis); }
+.chart-good { color: var(--good); fill: var(--good); }
+.chart-caution { color: var(--caution); fill: var(--caution); }
+.chart-bad { color: var(--bad); fill: var(--bad); }
+
+/* Enhanced Card System */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--elevation-card), 0 0 0 1px color-mix(in oklab, var(--border) 100%, transparent);
+  transition: box-shadow var(--anim-btn-hover), transform var(--anim-btn-hover), border-color var(--anim-btn-hover);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--elevation-card-hover);
+  border-color: color-mix(in oklab, var(--primary) 22%, var(--border) 78%);
+}
+
+.card:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 28%, white 72%), var(--elevation-card-hover);
+}
+
+.card.acc-glow:hover {
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 26%, transparent), var(--elevation-card-hover);
+}
+
+/* Enhanced Button System */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: var(--shadow-xs);
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all var(--anim-btn-hover);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.btn:active {
+  transform: translateY(0);
+  transition: transform var(--anim-btn-press);
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Ripple effect */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: "";
+  position: absolute;
+  inset: auto;
+  left: var(--x, 50%);
+  top: var(--y, 50%);
+  width: 0;
+  height: 0;
+  transform: translate(-50%, -50%);
+  background: color-mix(in oklab, var(--primary) 35%, white 65%);
+  opacity: 0.35;
+  border-radius: 999px;
+}
+
+.ripple.is-rippling::after {
+  animation: rippleAnim var(--anim-ripple);
+}
+
+@keyframes rippleAnim {
+  from { width: 0; height: 0; opacity: 0.45 }
+  to { width: 240px; height: 240px; opacity: 0 }
+}
+
+/* Sidebar animations */
+.sidebar {
+  transition: transform var(--anim-sidebar);
+}
+
+.sidebar.is-collapsed {
+  transform: translateX(-100%);
+}
+
+/* Shimmer skeleton */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: var(--muted);
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+  transform: translateX(-100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .shimmer::after {
+    animation: shimmer var(--anim-skeleton);
+  }
+  
+  @keyframes shimmer {
+    0% { transform: translateX(-100%) }
+    50% { transform: translateX(0) }
+    100% { transform: translateX(100%) }
+  }
+}
+
+/* Panel entrance variants */
+.panel {
+  opacity: 0;
+  transform: translateY(16px);
+  --dur-fallback: var(--dur-local, var(--dur-md));
+  --ease-fallback: var(--ease-local, var(--ease-smooth));
+  transition: opacity var(--dur-fallback) var(--ease-fallback), transform var(--dur-fallback) var(--ease-fallback);
+}
+
+.panel.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Variant tokens override via CSS classes */
+.ease-emph { --ease-local: var(--ease-emphasized); }
+.ease-std { --ease-local: var(--ease-standard); }
+.ease-bnc { --ease-local: var(--ease-bounce); }
+.ease-smh { --ease-local: var(--ease-smooth); }
+
+.dur-xs { --dur-local: var(--dur-xs); }
+.dur-sm { --dur-local: var(--dur-sm); }
+.dur-md { --dur-local: var(--dur-md); }
+.dur-lg { --dur-local: var(--dur-lg); }
+
+/* Stagger reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.reveal.in {
+  opacity: 1;
+  transform: none;
+  transition: opacity var(--dur-md) var(--ease-smooth), transform var(--dur-md) var(--ease-smooth);
+}
+
+/* Badge system */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--primary) 10%, white 90%);
+  color: var(--primary-foreground);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Progress bars */
+.bar {
+  height: 8px;
+  background: var(--muted);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bar > span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: var(--primary);
+}
+
+.bar.linear > span {
+  --dur-fallback: var(--dur-local, var(--dur-md));
+  --ease-fallback: var(--ease-local, var(--ease-smooth));
+  transition: width var(--dur-fallback) var(--ease-fallback);
+}
+
+.bar.bounce > span {
+  --dur-fallback: var(--dur-local, var(--dur-md));
+  --ease-fallback: var(--ease-local, var(--ease-bounce));
+  transition: width var(--dur-fallback) var(--ease-fallback);
+}
+
+/* Chat animations */
+.msg {
+  will-change: transform, opacity;
+}
+
+.msg.user {
+  transform: translate(10px, 20px) scale(.98);
+  opacity: 0;
+}
+
+.msg.ai {
+  transform: translateY(15px) scale(.97);
+  opacity: 0;
+}
+
+.msg.enter {
+  opacity: 1;
+  transform: translate(0, 0) scale(1);
+}
+
+.msg.user {
+  transition: transform var(--anim-userMsg), opacity var(--anim-userMsg);
+}
+
+.msg.ai {
+  transition: transform var(--anim-aiMsg), opacity var(--anim-aiMsg);
+}
+
+/* Typing dots */
+.dots span {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 4px;
+  border-radius: 999px;
+  background: var(--muted-foreground);
+  opacity: 0.4;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dots span {
+    animation: typing var(--anim-typing);
+  }
+  
+  .dots span:nth-child(2) { animation-delay: 120ms }
+  .dots span:nth-child(3) { animation-delay: 240ms }
+  
+  @keyframes typing {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.4 }
+    40% { transform: translateY(-6px); opacity: 1 }
+  }
+}
+
+/* Error/success animations */
+.shake {
+  animation: shake var(--anim-error);
+}
+
+@keyframes shake {
+  10%, 90% { transform: translateX(-2px) }
+  20%, 80% { transform: translateX(4px) }
+  30%, 50%, 70% { transform: translateX(-6px) }
+  40%, 60% { transform: translateX(6px) }
+}
+
+.success {
+  animation: succ var(--anim-success);
+}
+
+@keyframes succ {
+  0% { transform: scale(.8) rotate(0) }
+  40% { transform: scale(1.15) rotate(8deg) }
+  100% { transform: scale(1) rotate(0) }
+}
+
+/* Chart animations */
+.chart-area path.area {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.chart-area path.line {
+  stroke-dasharray: 800;
+  stroke-dashoffset: 800;
+}
+
+.chart-area.is-enter path.area {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--anim-chatLoad), transform var(--anim-chatLoad);
+}
+
+.chart-area.is-enter path.line {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--anim-chatLoad);
+}
+
+/* Scroll hint */
+.scroll-hint {
+  animation: scrollhint var(--anim-scrollHint);
+}
+
+@keyframes scrollhint {
+  0%, 100% { transform: translateY(0); opacity: 0.6 }
+  50% { transform: translateY(-6px); opacity: 1 }
+}
+
+/* Sticky shadow */
+.sticky-shadow {
+  transition: box-shadow var(--dur-sm) var(--ease-smooth);
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  .tile {
+    padding: 12px !important;
+  }
+  
+  .tile .meta {
+    display: block;
+    margin-top: 6px;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

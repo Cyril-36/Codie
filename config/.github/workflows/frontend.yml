@@ -1,0 +1,46 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  frontend:
+    name: Frontend - Lint, Test, Coverage, Build, Audit
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+
+      - name: Show pnpm version
+        run: pnpm --version
+
+      - name: Install dependencies (pnpm)
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (ESLint)
+        run: pnpm lint
+
+      - name: Run tests with coverage (>=80%)
+        run: pnpm test -- --coverage --coverageThreshold.global.lines=80
+
+      - name: Build
+        run: pnpm build
+
+      - name: Vulnerability audit (pnpm)
+        run: pnpm audit --audit-level=high

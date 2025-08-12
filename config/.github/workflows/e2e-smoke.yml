@@ -1,0 +1,134 @@
+name: e2e-smoke
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend image
+        run: docker build -t codie-backend:smoke -f backend/Dockerfile .
+
+      - name: Build frontend image
+        run: docker build -t codie-frontend:smoke -f frontend/Dockerfile .
+
+      - name: Run backend
+        run: docker run -d --name codie-backend -p 8000:8000 codie-backend:smoke
+
+      - name: Run frontend
+        run: docker run -d --name codie-frontend -p 8080:80 codie-frontend:smoke
+
+      - name: Wait for backend health
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/api/v1/health > /dev/null; then
+              echo "Backend healthy"; exit 0
+            fi
+            sleep 2
+          done
+          echo "Backend failed to become healthy"; exit 1
+
+      - name: Wait for frontend health
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8080/healthz > /dev/null; then
+              echo "Frontend healthy"; exit 0
+            fi
+            sleep 2
+          done
+          echo "Frontend failed to become healthy"; exit 1
+
+      - name: Exercise analyze endpoint
+        run: |
+          curl -sS -X POST http://localhost:8000/api/v1/analyze \
+            -H 'Content-Type: application/json' \
+            --data '{"language":"python","code":"print(1)"}' | jq -e '.complexity'
+
+      - name: Exercise export endpoints
+        run: |
+          curl -fsS http://localhost:8000/api/v1/export/md > md.md
+          head -n1 md.md | grep "Codie Analysis Report"
+          curl -fsS http://localhost:8000/api/v1/export/pdf > out.pdf
+          head -c4 out.pdf | grep -a "%PDF"
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          docker logs codie-backend || true
+          docker logs codie-frontend || true
+
+      - name: Teardown
+        if: always()
+        run: |
+          docker rm -f codie-backend codie-frontend || true
+
+  perf-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build -t codie-backend:smoke -f backend/Dockerfile .
+
+      - name: Run backend
+        run: docker run -d --name codie-backend -p 8000:8000 codie-backend:smoke
+
+      - name: Wait for backend health
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/api/v1/health > /dev/null; then
+              echo "Backend healthy"; exit 0
+            fi
+            sleep 2
+          done
+          echo "Backend failed to become healthy"; exit 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install autocannon
+        run: npm i -g autocannon@7
+
+      - name: Perf health endpoint
+        id: health
+        shell: bash
+        run: |
+          set -e
+          autocannon -d 10 -c 10 http://localhost:8000/api/v1/health | tee health.out
+          ERR=$(grep -Ei "non[- ]?2xx|non[- ]?3xx" health.out || true)
+          P95=$(grep -Ei "^ *p95" health.out | awk '{print $2}' | tr -d 'ms')
+          echo "p95_health=$P95" >> $GITHUB_OUTPUT
+          if [ -n "$ERR" ]; then echo "Non-2xx detected"; exit 1; fi
+          if [ "${P95:-0}" -gt 200 ]; then echo "p95 too high ($P95 ms)"; exit 1; fi
+
+      - name: Perf analyze endpoint
+        id: analyze
+        shell: bash
+        run: |
+          set -e
+          BODY='{"language":"python","code":"print(1)"}'
+          autocannon -d 10 -c 5 -m POST -H "Content-Type: application/json" -b "$BODY" http://localhost:8000/api/v1/analyze | tee analyze.out
+          ERR=$(grep -Ei "non[- ]?2xx|non[- ]?3xx" analyze.out || true)
+          P95=$(grep -Ei "^ *p95" analyze.out | awk '{print $2}' | tr -d 'ms')
+          echo "p95_analyze=$P95" >> $GITHUB_OUTPUT
+          if [ -n "$ERR" ]; then echo "Non-2xx detected"; exit 1; fi
+          if [ "${P95:-0}" -gt 300 ]; then echo "p95 too high ($P95 ms)"; exit 1; fi
+
+      - name: Teardown
+        if: always()
+        run: docker rm -f codie-backend || true

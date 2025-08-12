@@ -1,0 +1,55 @@
+name: release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set tags
+        id: meta
+        run: |
+          REPO="${{ github.repository }}"
+          REF="${{ github.ref_name }}"
+          echo "BACK=ghcr.io/${REPO}/codie-backend:${REF}" >> $GITHUB_OUTPUT
+          echo "FRONT=ghcr.io/${REPO}/codie-frontend:${REF}" >> $GITHUB_OUTPUT
+          if [[ "$REF" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "BACK_LATEST=ghcr.io/${REPO}/codie-backend:latest" >> $GITHUB_OUTPUT
+            echo "FRONT_LATEST=ghcr.io/${REPO}/codie-frontend:latest" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build & push backend
+        run: |
+          docker build -f backend/Dockerfile -t "${{ steps.meta.outputs.BACK }}" .
+          docker push "${{ steps.meta.outputs.BACK }}"
+          if [ -n "${{ steps.meta.outputs.BACK_LATEST }}" ]; then
+            docker tag "${{ steps.meta.outputs.BACK }}" "${{ steps.meta.outputs.BACK_LATEST }}"
+            docker push "${{ steps.meta.outputs.BACK_LATEST }}"
+          fi
+
+      - name: Build & push frontend
+        run: |
+          docker build -f frontend/Dockerfile -t "${{ steps.meta.outputs.FRONT }}" .
+          docker push "${{ steps.meta.outputs.FRONT }}"
+          if [ -n "${{ steps.meta.outputs.FRONT_LATEST }}" ]; then
+            docker tag "${{ steps.meta.outputs.FRONT }}" "${{ steps.meta.outputs.FRONT_LATEST }}"
+            docker push "${{ steps.meta.outputs.FRONT_LATEST }}"
+          fi

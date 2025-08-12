@@ -1,0 +1,156 @@
+version: '3.8'
+
+services:
+  # Redis for rate limiting and caching
+  redis:
+    image: redis:7-alpine
+    container_name: codie-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-codie}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # PostgreSQL database
+  db:
+    image: postgres:16-alpine
+    container_name: codie-db
+    environment:
+      - POSTGRES_USER=${CODIE_DB_USER:-codie}
+      - POSTGRES_PASSWORD=${CODIE_DB_PASS:-codie}
+      - POSTGRES_DB=${CODIE_DB_NAME:-codie}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${CODIE_DB_USER:-codie} -d ${CODIE_DB_NAME:-codie}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Backend API
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    image: codie-backend:dev
+    container_name: codie-backend
+    environment:
+      - BUILD_HASH=${GITHUB_SHA:-dev}
+      - CODIE_DB_USER=${CODIE_DB_USER:-codie}
+      - CODIE_DB_PASS=${CODIE_DB_PASS:-codie}
+      - CODIE_DB_HOST=db
+      - CODIE_DB_PORT=5432
+      - CODIE_DB_NAME=${CODIE_DB_NAME:-codie}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-codie}@redis:6379/0
+      - RL_STORE=redis
+      - SECURITY_RATE_LIMIT_STORE=redis
+      - MONITORING_ENABLE_METRICS=true
+      - MONITORING_ENABLE_TRACING=false
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_ENVIRONMENT=${APP_ENVIRONMENT:-development}
+      # AI Provider keys
+      - AI_GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - AI_HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN:-}
+      # Security settings
+      - SECURITY_CVE_CACHE_TTL=3600
+      - SECURITY_ENABLE_NVD_API=${SECURITY_ENABLE_NVD_API:-false}
+      - SECURITY_ENABLE_OSV_API=${SECURITY_ENABLE_OSV_API:-true}
+      - SECURITY_NVD_API_KEY=${NVD_API_KEY:-}
+    ports:
+      - "8001:8001"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8001/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    volumes:
+      - ../backend/logs:/app/logs
+      - ../data:/app/data
+
+  # Frontend
+  frontend:
+    build:
+      context: ../frontend
+      args:
+        - VITE_API_BASE_URL=http://localhost:8001
+        - VITE_NODE_ENV=production
+    image: codie-frontend:dev
+    container_name: codie-frontend
+    ports:
+      - "5174:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # Prometheus for metrics
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: codie-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+  # Grafana for dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: codie-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana-dashboard.json:/etc/grafana/provisioning/dashboards/dashboard.json
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # Vault for secrets management (development)
+  vault:
+    image: vault:latest
+    container_name: codie-vault
+    ports:
+      - "8200:8200"
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_DEV_ROOT_TOKEN_ID:-codie-dev}
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+    cap_add:
+      - IPC_LOCK
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:

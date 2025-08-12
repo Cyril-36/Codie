@@ -1,0 +1,43 @@
+{
+  "title": "Codie — API Metrics",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      {
+        "type": "constant",
+        "name": "job",
+        "label": "Prometheus job",
+        "query": "codie-backend",
+        "current": { "text": "codie-backend", "value": "codie-backend", "selected": true }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "HTTP Status Breakdown (rate 5m)",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum by (status) (rate(http_requests_total{job=\"$job\"}[5m]))",
+          "legendFormat": "{{status}}"
+        }
+      ],
+      "options": { "legend": { "displayMode": "list", "placement": "right" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Top 5 Paths (rate 5m)",
+      "gridPos": { "x": 0, "y": 8, "w": 24, "h": 8 },
+      "targets": [
+        {
+          "expr": "topk(5, sum by (path) (rate(http_requests_total{job=\"$job\"}[5m])))",
+          "legendFormat": "{{path}}"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1344 @@
+/* ========================================
+   Modern Dark Mode Design System
+   Comprehensive theme with OKLCH colors
+   ======================================== */
+
+:root {
+  /* Color system */
+  --background: oklch(0.985 0 0);
+  --foreground: oklch(0.22 0 0);
+  --card: oklch(0.99 0 0);
+  --card-foreground: var(--foreground);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--foreground);
+
+  /* Brand accents (avoid blue/indigo) */
+  --primary: oklch(0.64 0.09 180); /* Teal */
+  --primary-foreground: oklch(0.15 0.02 180);
+  --highlight: oklch(0.62 0.17 300); /* Purple */
+  --highlight-foreground: oklch(0.15 0.02 300);
+  --warning: oklch(0.82 0.18 80); /* Amber */
+  --warning-foreground: oklch(0.22 0.04 80);
+
+  /* Semantic */
+  --secondary: oklch(0.96 0 0);
+  --secondary-foreground: oklch(0.36 0 0);
+  --muted: oklch(0.95 0 0);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.94 0.02 260);
+  --accent-foreground: var(--foreground);
+  --destructive: oklch(0.55 0.18 27);
+  --destructive-foreground: oklch(0.99 0 0);
+
+  /* Surfaces & controls */
+  --border: oklch(0.9 0 0);
+  --input: oklch(0.93 0 0);
+  --ring: color-mix(in oklab, var(--primary) 60%, black 0%);
+
+  /* Charts palette */
+  --chart-1: var(--primary);
+  --chart-2: oklch(0.72 0.1 200); /* teal-light */
+  --chart-3: var(--highlight);
+  --chart-4: oklch(0.72 0.12 320); /* purple-light */
+  --chart-5: var(--warning);
+
+  /* Sidebar */
+  --sidebar: oklch(0.98 0 0);
+  --sidebar-foreground: oklch(0.25 0 0);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  /* Typography */
+  --font-sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-serif: Merriweather, ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Radii */
+  --radius-2xs: 4px;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius: var(--radius-sm);
+
+  /* Spacing (8px grid) */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --spacing: 0.25rem; /* Tailwind compatibility */
+
+  /* Elevation / Shadows (crisp, low-noise) */
+  --shadow-2xs: 0 1px 0 rgba(0,0,0,0.04);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 4px 10px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 20px rgba(0,0,0,0.10), 0 4px 10px rgba(0,0,0,0.08);
+  --shadow-lg: 0 14px 28px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.10);
+  --shadow-xl: 0 24px 48px rgba(0,0,0,0.14), 0 12px 24px rgba(0,0,0,0.12);
+  --shadow-2xl: 0 40px 64px rgba(0,0,0,0.16);
+
+  /* Motion (CSS variables with guidance) */
+  --ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  --dur-2xs: 90ms;   /* taps, ripples */
+  --dur-xs: 140ms;   /* hovers, chips */
+  --dur-sm: 200ms;   /* buttons, cards */
+  --dur-md: 300ms;   /* panels, menus */
+  --dur-lg: 450ms;   /* charts enter */
+  --dur-xl: 600ms;   /* diff apply, drawer */
+
+  --stagger-sm: 60ms;
+  --stagger-md: 120ms;
+
+  /* Focus and outlines */
+  --focus-ring: 0 0 0 3px color-mix(in oklab, var(--primary) 22%, white 78%);
+  --focus-ring-strong: 0 0 0 3px color-mix(in oklab, var(--highlight) 28%, white 72%);
+
+  /* Density & grid */
+  --container-max: 1440px;
+  --grid-gap: 16px;
+
+  /* Charts detail */
+  --gridline: oklch(0.92 0 0);
+  --axis: oklch(0.36 0 0);
+  --good: oklch(0.75 0.11 160);
+  --caution: var(--warning);
+  --bad: oklch(0.58 0.19 28);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0.14 0 0);
+    --foreground: oklch(0.92 0 0);
+    --card: oklch(0.18 0 0);
+    --card-foreground: var(--foreground);
+    --popover: oklch(0.16 0 0);
+    --popover-foreground: var(--foreground);
+
+    --secondary: oklch(0.22 0 0);
+    --secondary-foreground: oklch(0.88 0 0);
+    --muted: oklch(0.22 0 0);
+    --muted-foreground: oklch(0.69 0 0);
+    --accent: oklch(0.24 0.01 260);
+    --accent-foreground: var(--foreground);
+
+    --border: oklch(0.32 0 0);
+    --input: oklch(0.24 0 0);
+    --ring: color-mix(in oklab, var(--primary) 70%, white 0%);
+
+    --sidebar: oklch(0.16 0 0);
+    --sidebar-foreground: oklch(0.92 0 0);
+    --sidebar-border: oklch(0.28 0 0);
+  }
+}
+
+/* Explicit dark mode class overrides (higher specificity than media query) */
+html.dark,
+[data-theme="dark"] {
+  --background: oklch(0.14 0 0) !important;
+  --foreground: oklch(0.92 0 0) !important;
+  --card: oklch(0.18 0 0) !important;
+  --card-foreground: oklch(0.92 0 0) !important;
+  --popover: oklch(0.16 0 0) !important;
+  --popover-foreground: oklch(0.92 0 0) !important;
+
+  /* Brand colors stay consistent but with better contrast in dark */
+  --primary: oklch(0.64 0.09 180) !important; /* Teal */
+  --primary-foreground: oklch(0.15 0.02 180) !important;
+  --highlight: oklch(0.62 0.17 300) !important; /* Purple */
+  --highlight-foreground: oklch(0.15 0.02 300) !important;
+
+  --secondary: oklch(0.22 0 0) !important;
+  --secondary-foreground: oklch(0.88 0 0) !important;
+  --muted: oklch(0.22 0 0) !important;
+  --muted-foreground: oklch(0.69 0 0) !important;
+  --accent: oklch(0.24 0.01 260) !important;
+  --accent-foreground: oklch(0.92 0 0) !important;
+
+  --border: oklch(0.32 0 0) !important;
+  --input: oklch(0.24 0 0) !important;
+  --ring: color-mix(in oklab, oklch(0.64 0.09 180) 70%, white 0%) !important;
+
+  --sidebar: oklch(0.16 0 0) !important;
+  --sidebar-foreground: oklch(0.92 0 0) !important;
+  --sidebar-border: oklch(0.28 0 0) !important;
+}
+
+/* Tailwind overrides for teal colors */
+.dark .bg-blue-600,
+[data-theme="dark"] .bg-blue-600 {
+  background-color: var(--primary) !important;
+}
+
+.dark .bg-blue-700,
+[data-theme="dark"] .bg-blue-700 {
+  background-color: color-mix(in oklch, var(--primary) 85%, black 15%) !important;
+}
+
+.dark .hover\\:bg-blue-700:hover,
+[data-theme="dark"] .hover\\:bg-blue-700:hover {
+  background-color: color-mix(in oklch, var(--primary) 85%, black 15%) !important;
+}
+
+.dark .text-blue-600,
+[data-theme="dark"] .text-blue-600 {
+  color: var(--primary) !important;
+}
+
+.dark .border-blue-600,
+[data-theme="dark"] .border-blue-600 {
+  border-color: var(--primary) !important;
+}
+
+/* Base resets with strong specificity to out-prioritize UI libs */
+html, body { font-family: var(--font-sans) !important; color: var(--foreground) !important; background: var(--background) !important; letter-spacing: 0 !important; }
+h1, h2, h3, h4, h5, h6 { color: var(--foreground) !important; line-height: 1.15 !important; margin: 0 0 var(--space-4) 0 !important; font-weight: 650 !important; }
+p { margin: 0 0 var(--space-4) 0 !important; color: color-mix(in oklab, var(--foreground) 85%, white 15%) !important; }
+code, pre { font-family: var(--font-mono) !important; }
+
+/* Utility tokens as CSS vars for JS consumption */
+:root {
+  --elevation-card: var(--shadow-sm);
+  --elevation-card-hover: var(--shadow);
+  --elevation-popover: var(--shadow-md);
+  --elevation-modal: var(--shadow-xl);
+
+  /* Animation micro-spec (reference) */
+  --anim-userMsg: var(--dur-sm) var(--ease-standard);
+  --anim-aiMsg: var(--dur-lg) var(--ease-bounce);
+  --anim-typing: 1400ms ease-in-out;
+  --anim-status: var(--dur-sm) var(--ease-standard);
+  --anim-sidebar: var(--dur-md) var(--ease-emphasized);
+  --anim-overlay: var(--dur-sm) var(--ease-smooth);
+  --anim-input-focus: var(--dur-xs) var(--ease-emphasized);
+  --anim-btn-press: var(--dur-2xs) var(--ease-emphasized);
+  --anim-btn-hover: var(--dur-xs) var(--ease-smooth);
+  --anim-ripple: 400ms var(--ease-smooth);
+  --anim-chatLoad: var(--dur-md) var(--ease-standard);
+  --anim-skeleton: 2000ms ease-in-out;
+  --anim-spinner: 1000ms linear;
+  --anim-msgHover: var(--dur-xs) var(--ease-smooth);
+  --anim-msgSelect: var(--dur-xs) var(--ease-emphasized);
+  --anim-error: 400ms var(--ease-emphasized);
+  --anim-success: 600ms var(--ease-bounce);
+  --anim-autoScroll: 400ms ease;
+  --anim-scrollHint: 800ms ease-in-out;
+}
+
+/* Accessible focus */
+:where(button, [role="button"], a, input, select, textarea, [tabindex]) :focus-visible { outline: none !important; box-shadow: var(--focus-ring) !important; }
+
+/* Data viz helpers */
+.chart-gridline { stroke: var(--gridline); }
+.chart-axis { stroke: var(--axis); }
+.chart-good { color: var(--good); fill: var(--good); }
+.chart-caution { color: var(--caution); fill: var(--caution); }
+.chart-bad { color: var(--bad); fill: var(--bad); }/* ========================================
+   Codie Integration with New Design System
+   ======================================== */
+[data-theme="dark"],
+.dark {
+  /* Map new design system to existing Codie variables */
+  --color-bg-primary: var(--background) !important;
+  --color-bg-secondary: var(--card) !important;
+  --color-bg-tertiary: var(--secondary) !important;
+  
+  --color-text-primary: var(--foreground) !important;
+  --color-text-secondary: var(--muted-foreground) !important;
+  --color-text-tertiary: var(--muted-foreground) !important;
+  
+  --color-border-primary: var(--border) !important;
+  --color-border-secondary: var(--border) !important;
+  
+  /* Component colors using new system */
+  --color-card-bg: var(--card) !important;
+  --color-input-bg: var(--input) !important;
+  --color-button-secondary-bg: var(--secondary) !important;
+  --color-sidebar-bg: var(--sidebar) !important;
+  --color-header-bg: var(--card) !important;
+  
+  /* Enhanced semantic colors */
+  --color-success: var(--good) !important;
+  --color-warning: var(--warning) !important;
+  --color-error: var(--destructive) !important;
+  --color-info: var(--primary) !important;
+  
+  /* Map gray scale for new system */
+  --color-gray-900: var(--foreground) !important;
+  --color-gray-800: var(--card-foreground) !important;
+  --color-gray-700: var(--muted-foreground) !important;
+  --color-gray-600: var(--muted-foreground) !important;
+  --color-gray-500: var(--muted-foreground) !important;
+  --color-gray-400: var(--muted-foreground) !important;
+  --color-gray-300: var(--secondary) !important;
+  --color-gray-200: var(--card) !important;
+  --color-gray-100: var(--background) !important;
+  --color-gray-50: var(--background) !important;
+  
+  /* Brand colors using new system */
+  --color-primary: var(--primary) !important;
+  --color-primary-dark: var(--primary) !important;
+  --color-primary-light: var(--primary) !important;
+  --color-primary-pale: var(--accent) !important;
+}
+
+/* ========================================
+   Force New Design System Styles
+   ======================================== */
+[data-theme="dark"] body,
+.dark body,
+html[data-theme="dark"],
+html.dark {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+  font-family: var(--font-sans) !important;
+}
+
+/* Force root-level application */
+html[data-theme="dark"] #root,
+html.dark #root {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+}
+
+/* Set color scheme for dark mode */
+html[data-theme="dark"],
+html.dark {
+  color-scheme: dark;
+}
+
+[data-theme="dark"] .bg-gray-900,
+.dark .bg-gray-900 {
+  background-color: var(--foreground) !important;
+}
+
+[data-theme="dark"] .bg-gray-800,
+.dark .bg-gray-800 {
+  background-color: var(--card-foreground) !important;
+}
+
+[data-theme="dark"] .bg-gray-700,
+.dark .bg-gray-700 {
+  background-color: var(--muted-foreground) !important;
+}
+
+[data-theme="dark"] .bg-gray-600,
+.dark .bg-gray-600 {
+  background-color: var(--muted-foreground) !important;
+}
+
+[data-theme="dark"] .bg-gray-500,
+.dark .bg-gray-500 {
+  background-color: var(--muted-foreground) !important;
+}
+
+[data-theme="dark"] .bg-gray-400,
+.dark .bg-gray-400 {
+  background-color: var(--muted-foreground) !important;
+}
+
+[data-theme="dark"] .bg-gray-300,
+.dark .bg-gray-300 {
+  background-color: var(--secondary) !important;
+}
+
+[data-theme="dark"] .bg-gray-200,
+.dark .bg-gray-200 {
+  background-color: var(--card) !important;
+}
+
+[data-theme="dark"] .bg-gray-100,
+.dark .bg-gray-100 {
+  background-color: var(--background) !important;
+}
+
+[data-theme="dark"] .bg-gray-50,
+.dark .bg-gray-50 {
+  background-color: var(--background) !important;
+}
+
+[data-theme="dark"] .text-gray-900,
+.dark .text-gray-900 {
+  color: var(--foreground) !important;
+}
+
+[data-theme="dark"] .text-gray-800,
+.dark .text-gray-800 {
+  color: var(--card-foreground) !important;
+}
+
+[data-theme="dark"] .text-gray-700,
+.dark .text-gray-700 {
+  color: var(--muted-foreground) !important;
+}
+
+[data-theme="dark"] .text-gray-600,
+.dark .text-gray-600 {
+  color: var(--muted-foreground) !important;
+}
+
+[data-theme="dark"] .text-gray-500,
+.dark .text-gray-500 {
+  color: var(--muted-foreground) !important;
+}
+
+[data-theme="dark"] .text-gray-400,
+.dark .text-gray-400 {
+  color: var(--muted-foreground) !important;
+}
+
+[data-theme="dark"] .text-gray-300,
+.dark .text-gray-300 {
+  color: var(--secondary) !important;
+}
+
+[data-theme="dark"] .text-gray-200,
+.dark .text-gray-200 {
+  color: var(--card) !important;
+}
+
+[data-theme="dark"] .text-gray-100,
+.dark .text-gray-100 {
+  color: var(--background) !important;
+}
+
+[data-theme="dark"] .text-white,
+.dark .text-white {
+  color: var(--foreground) !important;
+}
+
+[data-theme="dark"] .text-gray-50,
+.dark .text-gray-50 {
+  color: var(--background) !important;
+}
+
+[data-theme="dark"] .border-gray-900,
+.dark .border-gray-900 {
+  border-color: var(--foreground) !important;
+}
+
+[data-theme="dark"] .border-gray-800,
+.dark .border-gray-800 {
+  border-color: var(--card-foreground) !important;
+}
+
+[data-theme="dark"] .border-gray-700,
+.dark .border-gray-700 {
+  border-color: var(--muted-foreground) !important;
+}
+
+[data-theme="dark"] .border-gray-600,
+.dark .border-gray-600 {
+  border-color: var(--muted-foreground) !important;
+}
+
+[data-theme="dark"] .border-gray-500,
+.dark .border-gray-500 {
+  border-color: var(--muted-foreground) !important;
+}
+
+[data-theme="dark"] .border-gray-400,
+.dark .border-gray-400 {
+  border-color: var(--muted-foreground) !important;
+}
+
+[data-theme="dark"] .border-gray-300,
+.dark .border-gray-300 {
+  border-color: var(--secondary) !important;
+}
+
+[data-theme="dark"] .border-gray-200,
+.dark .border-gray-200 {
+  border-color: var(--card) !important;
+}
+
+[data-theme="dark"] .border-gray-100,
+.dark .border-gray-100 {
+  border-color: var(--background) !important;
+}
+
+[data-theme="dark"] .border-gray-50,
+.dark .border-gray-50 {
+  border-color: var(--background) !important;
+}
+
+/* ========================================
+   Enhanced Base Styles
+   ======================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-family);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+/* ========================================
+   Enhanced Layout Components
+   ======================================== */
+.container {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: var(--spacing-2xl) var(--spacing-lg);
+}
+
+.container-sm {
+  max-width: 42rem;
+}
+
+.container-lg {
+  max-width: 80rem;
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-cols-auto { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+.gap-sm { gap: var(--spacing-sm); }
+.gap-md { gap: var(--spacing-md); }
+.gap-lg { gap: var(--spacing-lg); }
+.gap-xl { gap: var(--spacing-xl); }
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* ========================================
+   Enhanced Card Components
+   ======================================== */
+.card {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: calc(var(--radius) + 4px);
+  padding: var(--spacing-xl);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+/* Enhanced card variants for Codie */
+.card-hover {
+  transition: all 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.1);
+}
+
+/* ========================================
+   Enhanced Button Components
+   ======================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  white-space: nowrap;
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  min-height: 2.25rem;
+  outline: none;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.btn-primary:hover {
+  background-color: rgba(236, 236, 236, 0.9);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.btn-outline:hover {
+  background-color: var(--accent);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: var(--foreground);
+}
+
+.btn-ghost:hover {
+  background-color: var(--accent);
+}
+
+.btn-destructive {
+  background-color: var(--destructive);
+  color: white;
+}
+
+.btn-destructive:hover {
+  background-color: rgba(220, 38, 38, 0.9);
+}
+
+/* Button Sizes */
+.btn-sm {
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: var(--font-size-xs);
+  min-height: 2rem;
+}
+
+.btn-lg {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-base);
+  min-height: 2.75rem;
+}
+
+.btn-icon {
+  padding: var(--spacing-sm);
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+/* Enhanced button variants for Codie */
+.btn-hover {
+  transition: all 0.2s ease;
+}
+
+.btn-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ========================================
+   Enhanced Form Components
+   ======================================== */
+.form-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--foreground);
+  font-size: var(--font-size-sm);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.form-input:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px rgba(136, 136, 136, 0.5);
+}
+
+.form-input::placeholder {
+  color: var(--muted-foreground);
+}
+
+/* Enhanced input focus for Codie */
+.input-focus:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px rgba(136, 136, 136, 0.5);
+}
+
+/* ========================================
+   Enhanced Badge Components
+   ======================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  border: 1px solid;
+  padding: 0.125rem var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Priority Badge Variants */
+.badge-priority-high {
+  background: rgba(127, 29, 29, 0.3);
+  color: rgb(252, 165, 165);
+  border: 1px solid rgba(153, 27, 27, 0.5);
+}
+
+.badge-priority-medium {
+  background: rgba(120, 53, 15, 0.3);
+  color: rgb(252, 211, 77);
+  border: 1px solid rgba(146, 64, 14, 0.5);
+}
+
+.badge-priority-low {
+  background: rgba(20, 83, 45, 0.3);
+  color: rgb(134, 239, 172);
+  border: 1px solid rgba(22, 101, 52, 0.5);
+}
+
+/* ========================================
+   Enhanced Tab Components
+   ======================================== */
+.tab-list {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
+}
+
+.tab-button {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--foreground);
+  text-transform: capitalize;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+}
+
+.tab-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.tab-button.active {
+  background-color: #f8f9fa !important;
+  color: #1a1a1a !important;
+  border-color: #f8f9fa !important;
+  font-weight: 600;
+}
+
+.tab-button.active:hover {
+  background-color: #e9ecef !important;
+  border-color: #e9ecef !important;
+}
+
+/* ========================================
+   Enhanced Typography
+   ======================================== */
+.text-xs { font-size: var(--font-size-xs); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-base { font-size: var(--font-size-base); }
+.text-lg { font-size: var(--font-size-lg); }
+.text-xl { font-size: var(--font-size-xl); }
+.text-2xl { font-size: var(--font-size-2xl); }
+.text-3xl { font-size: var(--font-size-3xl); }
+.text-4xl { font-size: var(--font-size-4xl); }
+
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+.text-primary { color: var(--primary); }
+.text-muted { color: var(--muted-foreground); }
+.text-destructive { color: var(--destructive); }
+
+.gradient-text {
+  background: linear-gradient(to right, var(--primary), rgba(236, 236, 236, 0.6));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ========================================
+   Enhanced Icon System
+   ======================================== */
+.icon {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.icon-sm { width: 0.875rem; height: 0.875rem; }
+.icon-lg { width: 1.25rem; height: 1.25rem; }
+.icon-xl { width: 1.5rem; height: 1.5rem; }
+.icon-2xl { width: 2rem; height: 2rem; }
+
+/* ========================================
+   Enhanced Interactive Components
+   ======================================== */
+.checkbox {
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  background: rgba(255, 255, 255, 0.15);
+  transition: all 0.2s;
+}
+
+.checkbox:hover {
+  border-color: var(--ring);
+}
+
+.checkbox.checked {
+  background-color: rgb(22, 163, 74);
+  border-color: rgb(22, 163, 74);
+}
+
+.checkbox.checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+/* ========================================
+   Enhanced List Components
+   ======================================== */
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s;
+}
+
+.list-item:hover {
+  background-color: rgba(255, 255, 255, 0.025);
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item.completed {
+  opacity: 0.6;
+}
+
+/* ========================================
+   Enhanced Empty State Component
+   ======================================== */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-3xl) var(--spacing-lg);
+  color: var(--muted-foreground);
+}
+
+.empty-state .icon {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto var(--spacing-lg);
+  opacity: 0.5;
+}
+
+/* ========================================
+   Enhanced Utility Classes
+   ======================================== */
+.hidden { display: none; }
+.block { display: block; }
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.min-h-screen { min-height: 100vh; }
+
+.opacity-50 { opacity: 0.5; }
+.opacity-60 { opacity: 0.6; }
+.opacity-75 { opacity: 0.75; }
+
+.transition-all { transition: all 0.2s ease; }
+.transition-colors { transition: color 0.2s ease, background-color 0.2s ease; }
+.transition-opacity { transition: opacity 0.2s ease; }
+
+/* ========================================
+   Enhanced Responsive Design
+   ======================================== */
+@media (max-width: 768px) {
+  .container {
+    padding: var(--spacing-lg);
+  }
+  
+  .grid-cols-auto {
+    grid-template-columns: 1fr;
+  }
+  
+  .flex-col-mobile {
+    flex-direction: column;
+  }
+  
+  .text-center-mobile {
+    text-align: center;
+  }
+  
+  .gap-sm-mobile { gap: var(--spacing-sm); }
+  
+  .hidden-mobile { display: none; }
+  .block-mobile { display: block; }
+}
+
+@media (max-width: 640px) {
+  .text-2xl { font-size: var(--font-size-xl); }
+  .text-3xl { font-size: var(--font-size-2xl); }
+  .text-4xl { font-size: var(--font-size-3xl); }
+  
+  .container {
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+}
+
+/* ========================================
+   Enhanced Animation Utilities
+   ======================================== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Enhanced animations for Codie */
+.fade-in { 
+  animation: fadeIn var(--transition-fast) ease-out both; 
+}
+
+.slide-in { 
+  animation: slideIn var(--transition-fast) ease-out both; 
+}
+
+.scale-in { 
+  animation: scaleIn var(--transition-fast) ease-out both; 
+}
+
+/* ========================================
+   Enhanced Focus & Accessibility
+   ======================================== */
+.focus-visible:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Enhanced focus styles for Codie */
+.focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--color-primary-pale);
+}
+
+.focus-ring:focus {
+  outline: 2px solid var(--color-primary);
+}
+
+/* ========================================
+   Enhanced Dark Mode Specific Styles
+   ======================================== */
+[data-theme="dark"] .card,
+.dark .card {
+  background: linear-gradient(135deg, var(--card) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .btn-primary,
+.dark .btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, rgba(236, 236, 236, 0.8) 100%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .form-input,
+.dark .form-input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+[data-theme="dark"] .form-input:focus,
+.dark .form-input:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px rgba(136, 136, 136, 0.3);
+}
+
+/* ========================================
+   Enhanced Glassmorphism Effects
+   ======================================== */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   Enhanced Hover Effects
+   ======================================== */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.hover-glow {
+  transition: box-shadow 0.2s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(136, 136, 136, 0.3);
+}
+
+/* ========================================
+   Enhanced Loading States
+   ======================================== */
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ========================================
+   Enhanced Success/Error States
+   ======================================== */
+.success-animation {
+  animation: successPulse 0.6s ease-out;
+}
+
+@keyframes successPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.error-animation {
+  animation: errorShake 0.6s ease-out;
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* ========================================
+   Enhanced Mobile Optimizations
+   ======================================== */
+@media (hover: none) and (pointer: coarse) {
+  .hover-lift:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: none;
+  }
+  
+  /* Enhanced touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px;
+  }
+}
+
+/* ========================================
+   Enhanced Print Styles
+   ======================================== */
+@media print {
+  .card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  
+  .btn {
+    border: 1px solid #ccc;
+    background: white;
+    color: black;
+  }
+  
+  .glass,
+  .glass-dark {
+    background: white;
+    backdrop-filter: none;
+    border: 1px solid #ccc;
+  }
+}
+
+/* ========================================
+   Enhanced High Contrast Support
+   ======================================== */
+@media (prefers-contrast: high) {
+  :root {
+    --border: oklch(0 0 0);
+    --ring: oklch(0 0 0);
+  }
+  
+  [data-theme="dark"] {
+    --border: oklch(1 0 0);
+    --ring: oklch(1 0 0);
+  }
+  
+  .card {
+    border-width: 2px;
+  }
+  
+  .btn {
+    border-width: 2px;
+  }
+}
+
+/* ========================================
+   Component Styles Using New Design System
+   ======================================== */
+
+/* Enhanced Card Components */
+[data-theme="dark"] .card,
+.dark .card,
+[data-theme="dark"] .bg-white,
+.dark .bg-white {
+  background-color: var(--card) !important;
+  color: var(--card-foreground) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--elevation-card) !important;
+  border-radius: var(--radius) !important;
+}
+
+[data-theme="dark"] .card:hover,
+.dark .card:hover {
+  box-shadow: var(--elevation-card-hover) !important;
+}
+
+/* Enhanced Button Components */
+[data-theme="dark"] .btn-primary,
+.dark .btn-primary {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border: none !important;
+  border-radius: var(--radius) !important;
+  transition: all var(--anim-btn-hover) !important;
+}
+
+[data-theme="dark"] .btn-primary:hover,
+.dark .btn-primary:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: var(--elevation-card-hover) !important;
+}
+
+[data-theme="dark"] .btn-outline,
+.dark .btn-outline {
+  background-color: transparent !important;
+  border: 1px solid var(--border) !important;
+  color: var(--foreground) !important;
+  border-radius: var(--radius) !important;
+}
+
+[data-theme="dark"] .btn-outline:hover,
+.dark .btn-outline:hover {
+  background-color: var(--accent) !important;
+  border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .btn-destructive,
+.dark .btn-destructive {
+  background-color: var(--destructive) !important;
+  color: var(--destructive-foreground) !important;
+}
+
+/* Enhanced Form Components */
+[data-theme="dark"] .form-input,
+.dark .form-input,
+[data-theme="dark"] input,
+.dark input,
+[data-theme="dark"] textarea,
+.dark textarea {
+  background-color: var(--input) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--foreground) !important;
+  border-radius: var(--radius) !important;
+  transition: var(--anim-input-focus) !important;
+}
+
+[data-theme="dark"] .form-input:focus,
+.dark .form-input:focus,
+[data-theme="dark"] input:focus,
+.dark input:focus,
+[data-theme="dark"] textarea:focus,
+.dark textarea:focus {
+  border-color: var(--ring) !important;
+  box-shadow: var(--focus-ring) !important;
+  outline: none !important;
+}
+
+/* Enhanced Border Colors */
+[data-theme="dark"] .border,
+.dark .border,
+[data-theme="dark"] .border-gray-200,
+.dark .border-gray-200,
+[data-theme="dark"] .border-gray-300,
+.dark .border-gray-300 {
+  border-color: var(--border) !important;
+}
+
+/* Enhanced Text Colors */
+[data-theme="dark"] .text-muted,
+.dark .text-muted {
+  color: var(--muted-foreground) !important;
+}
+
+[data-theme="dark"] .text-primary,
+.dark .text-primary {
+  color: var(--primary) !important;
+}
+
+[data-theme="dark"] .text-destructive,
+.dark .text-destructive {
+  color: var(--destructive) !important;
+}
+
+[data-theme="dark"] .text-warning,
+.dark .text-warning {
+  color: var(--warning) !important;
+}
+
+[data-theme="dark"] .text-success,
+.dark .text-success {
+  color: var(--good) !important;
+}
+
+/* Enhanced Shadows for Dark Mode */
+[data-theme="dark"] .shadow,
+.dark .shadow,
+[data-theme="dark"] .shadow-sm,
+.dark .shadow-sm {
+  box-shadow: var(--elevation-card) !important;
+}
+
+[data-theme="dark"] .shadow-md,
+.dark .shadow-md {
+  box-shadow: var(--elevation-popover) !important;
+}
+
+[data-theme="dark"] .shadow-lg,
+.dark .shadow-lg {
+  box-shadow: var(--elevation-modal) !important;
+}
+
+/* Sidebar specific styling */
+[data-theme="dark"] .sidebar,
+.dark .sidebar {
+  background-color: var(--sidebar) !important;
+  color: var(--sidebar-foreground) !important;
+  border-color: var(--sidebar-border) !important;
+}
+
+/* Enhanced animations */
+[data-theme="dark"] .animate-fade-in,
+.dark .animate-fade-in {
+  animation: fadeIn var(--dur-sm) var(--ease-standard) !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(var(--space-2)); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================
+   Enhanced Reduced Motion Support
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .loading-shimmer {
+    animation: none;
+    background: rgba(255, 255, 255, 0.1);
+  }
+}

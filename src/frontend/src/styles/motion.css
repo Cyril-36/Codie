@@ -1,0 +1,526 @@
+/* ========================================
+   Codie Motion System - Comprehensive Motion Utilities
+   Drop-in motion classes for enhanced UI interactions
+   ======================================== */
+
+/* ========================================
+   Core Motion Utilities
+   ======================================== */
+
+/* Elevation and hover effects */
+.elevate {
+  box-shadow: var(--elevation-card);
+  transition: transform var(--dur-sm) var(--ease-smooth), 
+              box-shadow var(--dur-sm) var(--ease-smooth);
+}
+
+.elevate:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: var(--elevation-card-hover);
+}
+
+/* Button animations */
+.btn-anim {
+  transition: transform var(--anim-btn-hover), 
+              box-shadow var(--anim-btn-hover), 
+              background-color var(--anim-btn-hover);
+}
+
+.btn-anim:hover {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-anim:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow: var(--elevation-press);
+}
+
+/* Tab underline animations */
+.tab-underline {
+  position: relative;
+}
+
+.tab-underline::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  bottom: -2px;
+  height: 2px;
+  width: 0;
+  background: var(--primary);
+  transition: width var(--dur-sm) var(--ease-emphasized);
+}
+
+.tab-underline.active::after {
+  width: 80%;
+}
+
+/* Fade in animations */
+.fade-in {
+  animation: fadeIn var(--dur-md) var(--ease-standard);
+}
+
+.stagger > * {
+  animation: fadeIn var(--dur-md) var(--ease-standard);
+  animation-delay: calc(var(--stagger-sm) * var(--i, 0));
+}
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0.06) 25%, 
+    rgba(255,255,255,0.12) 37%, 
+    rgba(255,255,255,0.06) 63%);
+  background-size: 400% 100%;
+  animation: shimmer var(--anim-skeleton);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Modal and toast animations */
+.modal-enter {
+  animation: fadeIn var(--dur-md) var(--ease-bounce);
+}
+
+.toast-enter {
+  animation: fadeIn var(--dur-sm) var(--ease-emphasized);
+}
+
+/* ========================================
+   Enhanced Card Animations
+   ======================================== */
+
+.card-elevate {
+  transition: all var(--dur-sm) var(--ease-smooth);
+  transform: translateZ(0);
+}
+
+.card-elevate:hover {
+  transform: translateY(-4px) scale(1.02) translateZ(0);
+  box-shadow: var(--elevation-card-hover);
+}
+
+.card-tilt {
+  transition: transform var(--dur-sm) var(--ease-smooth);
+  transform-style: preserve-3d;
+}
+
+.card-tilt:hover {
+  transform: rotateX(2deg) rotateY(2deg) translateZ(10px);
+}
+
+/* ========================================
+   Enhanced Button Variants
+   ======================================== */
+
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-ripple:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-scale {
+  transition: transform var(--dur-xs) var(--ease-emphasized);
+}
+
+.btn-scale:hover {
+  transform: scale(1.05);
+}
+
+.btn-scale:active {
+  transform: scale(0.95);
+}
+
+/* ========================================
+   Enhanced Tab System
+   ======================================== */
+
+.tab-slide {
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-slide::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--primary);
+  transform: translateX(-100%);
+  transition: transform var(--dur-sm) var(--ease-emphasized);
+}
+
+.tab-slide.active::after {
+  transform: translateX(0);
+}
+
+.tab-indicator {
+  position: relative;
+}
+
+.tab-indicator::before {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transition: transform var(--dur-sm) var(--ease-emphasized);
+}
+
+.tab-indicator.active::before {
+  transform: scaleX(1);
+}
+
+/* ========================================
+   Enhanced Form Animations
+   ======================================== */
+
+.input-focus-anim {
+  transition: all var(--dur-xs) var(--ease-emphasized);
+}
+
+.input-focus-anim:focus {
+  transform: scale(1.01);
+  box-shadow: var(--focus-ring);
+}
+
+.input-float {
+  position: relative;
+}
+
+.input-float label {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  transition: all var(--dur-sm) var(--ease-smooth);
+  pointer-events: none;
+  color: var(--muted-foreground);
+}
+
+.input-float input:focus + label,
+.input-float input:not(:placeholder-shown) + label {
+  top: 0;
+  left: 8px;
+  font-size: 0.75rem;
+  color: var(--primary);
+  background: var(--background);
+  padding: 0 4px;
+}
+
+/* ========================================
+   Enhanced Loading States
+   ======================================== */
+
+.loading-pulse {
+  animation: pulse var(--dur-md) var(--ease-smooth) infinite;
+}
+
+.loading-bounce {
+  animation: bounce var(--dur-md) var(--ease-bounce) infinite;
+}
+
+.loading-spin {
+  animation: spin var(--dur-lg) linear infinite;
+}
+
+.loading-dots > * {
+  animation: bounce var(--dur-sm) var(--ease-bounce) infinite;
+}
+
+.loading-dots > *:nth-child(2) { animation-delay: var(--stagger-sm); }
+.loading-dots > *:nth-child(3) { animation-delay: calc(var(--stagger-sm) * 2); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   Enhanced Page Transitions
+   ======================================== */
+
+.page-enter {
+  animation: pageEnter var(--dur-md) var(--ease-emphasized);
+}
+
+.page-exit {
+  animation: pageExit var(--dur-sm) var(--ease-standard);
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pageExit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.98);
+  }
+}
+
+/* ========================================
+   Enhanced List Animations
+   ======================================== */
+
+.list-stagger > * {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: listItemEnter var(--dur-md) var(--ease-smooth) forwards;
+}
+
+.list-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.list-stagger > *:nth-child(2) { animation-delay: var(--stagger-sm); }
+.list-stagger > *:nth-child(3) { animation-delay: calc(var(--stagger-sm) * 2); }
+.list-stagger > *:nth-child(4) { animation-delay: calc(var(--stagger-sm) * 3); }
+.list-stagger > *:nth-child(5) { animation-delay: calc(var(--stagger-sm) * 4); }
+
+@keyframes listItemEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   Enhanced Graph Animations
+   ======================================== */
+
+.graph-node {
+  opacity: 0;
+  transform: scale(0.8);
+  animation: graphNodeEnter var(--dur-lg) var(--ease-bounce) forwards;
+}
+
+.graph-link {
+  opacity: 0;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: graphLinkEnter var(--dur-md) var(--ease-smooth) forwards;
+}
+
+.graph-node:nth-child(1) { animation-delay: 0ms; }
+.graph-node:nth-child(2) { animation-delay: var(--stagger-sm); }
+.graph-node:nth-child(3) { animation-delay: calc(var(--stagger-sm) * 2); }
+
+.graph-link:nth-child(1) { animation-delay: var(--stagger-sm); }
+.graph-link:nth-child(2) { animation-delay: calc(var(--stagger-sm) * 2); }
+.graph-link:nth-child(3) { animation-delay: calc(var(--stagger-sm) * 3); }
+
+@keyframes graphNodeEnter {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes graphLinkEnter {
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ========================================
+   Enhanced Micro-interactions
+   ======================================== */
+
+.hover-lift {
+  transition: transform var(--dur-sm) var(--ease-smooth);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.hover-scale {
+  transition: transform var(--dur-xs) var(--ease-emphasized);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-glow {
+  transition: box-shadow var(--dur-sm) var(--ease-smooth);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px var(--primary);
+}
+
+/* ========================================
+   Enhanced Success/Error States
+   ======================================== */
+
+.success-bounce {
+  animation: successBounce var(--dur-md) var(--ease-bounce);
+}
+
+.error-shake {
+  animation: errorShake var(--dur-sm) var(--ease-emphasized);
+}
+
+@keyframes successBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* ========================================
+   Enhanced Focus States
+   ======================================== */
+
+.focus-ring {
+  outline: none;
+  transition: box-shadow var(--dur-xs) var(--ease-emphasized);
+}
+
+.focus-ring:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.focus-ring-strong:focus-visible {
+  box-shadow: var(--focus-ring-strong);
+}
+
+/* ========================================
+   Enhanced Reduced Motion Support
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .elevate,
+  .btn-anim,
+  .tab-underline::after,
+  .fade-in,
+  .skeleton,
+  .modal-enter,
+  .toast-enter,
+  .card-elevate,
+  .card-tilt,
+  .btn-ripple::after,
+  .btn-scale,
+  .tab-slide::after,
+  .tab-indicator::before,
+  .input-focus-anim,
+  .input-float label,
+  .loading-pulse,
+  .loading-bounce,
+  .loading-spin,
+  .loading-dots > *,
+  .page-enter,
+  .page-exit,
+  .list-stagger > *,
+  .graph-node,
+  .graph-link,
+  .hover-lift,
+  .hover-scale,
+  .hover-glow,
+  .success-bounce,
+  .error-shake {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+  }
+  
+  .elevate:hover,
+  .card-elevate:hover,
+  .btn-anim:hover,
+  .hover-lift:hover,
+  .hover-scale:hover,
+  .hover-glow:hover {
+    transform: none !important;
+  }
+  
+  .tab-underline.active::after,
+  .tab-slide.active::after,
+  .tab-indicator.active::before {
+    width: 80% !important;
+    transform: none !important;
+  }
+}
+
+/* ========================================
+   Performance Optimizations
+   ======================================== */
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.will-change-transform { will-change: transform; }
+.will-change-opacity { will-change: opacity; }
+.will-change-scroll { will-change: scroll-position; }
+
+/* ========================================
+   Utility Classes
+   ======================================== */
+
+.animate-fast { animation-duration: var(--dur-sm); }
+.animate-normal { animation-duration: var(--dur-md); }
+.animate-slow { animation-duration: var(--dur-lg); }
+
+.ease-out { animation-timing-function: var(--ease-smooth); }
+.ease-in { animation-timing-function: var(--ease-standard); }
+.ease-in-out { animation-timing-function: var(--ease-emphasized); }
+
+.delay-0 { animation-delay: 0ms; }
+.delay-sm { animation-delay: var(--stagger-sm); }
+.delay-md { animation-delay: var(--stagger-md); }
+.delay-lg { animation-delay: calc(var(--stagger-md) * 2); }
+

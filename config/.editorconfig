@@ -1,0 +1,30 @@
+# EditorConfig helps maintain consistent coding styles
+# Top-most EditorConfig file
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Indentation defaults
+indent_style = space
+indent_size = 2
+
+# Python style (Black uses 4 spaces)
+[*.py]
+indent_size = 4
+max_line_length = 88
+
+# YAML
+[*.{yml,yaml}]
+indent_size = 2
+
+# JSON, JS, TS, JSX, TSX
+[*.{json,js,jsx,ts,tsx}]
+indent_size = 2
+
+# Markdown: do not trim trailing whitespace (for hard breaks)
+[*.md]
+trim_trailing_whitespace = false

@@ -1,0 +1,186 @@
+
+
+services:
+  # Backend API Service
+  backend:
+    build:
+      context: ../../src/backend
+      dockerfile: Dockerfile.dev
+    container_name: codie-backend-dev
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - DATABASE_URL=postgresql+asyncpg://codie_user:codie_password@postgres:5432/codie_dev
+      - LOG_LEVEL=DEBUG
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:3000
+    volumes:
+      - ../../src/backend:/app
+      - ./data:/app/data
+      - backend-logs:/app/logs
+    networks:
+      - codie-network
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ../../src/frontend
+      dockerfile: Dockerfile.dev
+    container_name: codie-frontend-dev
+    ports:
+      - "5174:5174"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8000
+      - VITE_APP_ENV=development
+    volumes:
+      - ../../src/frontend:/app
+      - /app/node_modules
+      - /app/dist
+    networks:
+      - codie-network
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: codie-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+      - ./config/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - codie-network
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # PostgreSQL Database (Alternative to SQLite)
+  postgres:
+    image: postgres:15-alpine
+    container_name: codie-postgres-dev
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=codie_dev
+      - POSTGRES_USER=codie_user
+      - POSTGRES_PASSWORD=codie_password
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./config/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - codie-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U codie_user -d codie_dev"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: codie-prometheus-dev
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../../config/infra/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - codie-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: codie-grafana-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ../../docs/monitoring/grafana-dashboard.json:/etc/grafana/provisioning/dashboards/dashboard.json
+    networks:
+      - codie-network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # Development Tools
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: codie-mailhog-dev
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - codie-network
+    restart: unless-stopped
+
+  # Database Management
+  adminer:
+    image: adminer:latest
+    container_name: codie-adminer-dev
+    ports:
+      - "8080:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=postgres
+    networks:
+      - codie-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+
+
+volumes:
+  backend-logs:
+    driver: local
+  redis-data:
+    driver: local
+  postgres-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  codie-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

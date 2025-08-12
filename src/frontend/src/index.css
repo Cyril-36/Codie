@@ -1,0 +1,209 @@
+/* Import Design System Fonts */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+
+/* Import Design System Variables */
+@import './styles/tokens.css';
+@import './styles/premium-animations.css';
+@import './styles/animations.css';
+@import './styles/enhanced-dark-mode.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Apply design system theme variables globally */
+html, body, #root {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: var(--theme-transition);
+  font-family: var(--font-sans);
+}
+
+/* Debug: Force dark theme when .dark class is present */
+html.dark,
+html[data-theme="dark"] {
+  --bg-primary: #0a0a0f !important;
+  --text-primary: #f9fafb !important;
+}
+
+html.dark body,
+html[data-theme="dark"] body,
+html.dark #root,
+html[data-theme="dark"] #root {
+  background-color: #0a0a0f !important;
+  color: #f9fafb !important;
+}
+
+/* micro: fade-in */
+.fade-in { animation: fadeIn .2s ease-out both; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* helper to avoid inline width warnings */
+.bar-width { width: var(--w); }
+
+/* Fix text overflow in select elements */
+select {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+select option {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* Ensure select elements have adequate width for text */
+.select-container {
+  min-width: 200px;
+}
+
+.select-container select {
+  min-width: 200px;
+}
+
+/* Fix text overflow in input elements */
+input {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* Ensure all form elements have adequate width for text */
+.form-element {
+  min-width: 200px;
+}
+
+/* Prevent text from being cut off in any form element */
+input, select, textarea {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* Clean select element styling */
+select {
+  min-width: 200px;
+  width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+select option {
+  min-width: 200px;
+  width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Form control styling */
+.form-control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Language selector styling */
+.language-selector {
+  position: relative;
+}
+
+.language-selector select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 8px;
+}
+
+/* Language selector focus states */
+.language-selector select:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--border-focus);
+}
+
+/* Form control select styling */
+.form-control select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Language selector option styling */
+.language-selector select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 8px;
+}
+
+/* Select container styling */
+.select-container {
+  position: relative;
+  width: 100%;
+}
+
+.select-container select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Language selector styling */
+.language-selector {
+  position: relative;
+  width: 100%;
+}
+
+.language-selector select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.language-selector select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 8px;
+}
+
+/* Theme transition for body */
+html, body, #root {
+  transition: var(--theme-transition);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

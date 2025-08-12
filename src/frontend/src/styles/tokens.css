@@ -1,0 +1,368 @@
+/* ========================================
+   Codie Premium Design System - Consolidated Tokens
+   Premium color palette with comprehensive animation system
+   ======================================== */
+
+:root[data-theme="dark"] {
+  /* Base Colors */
+  --bg-primary: #0a0a0f;        /* Deep space black */
+  --bg-secondary: #111118;      /* Elevated surface */
+  --bg-tertiary: #1a1a24;       /* Card background */
+  --bg-hover: #21212e;          /* Hover state */
+  --bg-selected: #2a2a3e;       /* Selected items */
+  
+  /* Brand Colors - Purple/Blue Gradient */
+  --brand-primary: #7c3aed;     /* Electric purple */
+  --brand-secondary: #2563eb;   /* Bright blue */
+  --brand-accent: #ec4899;      /* Hot pink accent */
+  --brand-gradient: linear-gradient(135deg, #7c3aed 0%, #2563eb 50%, #06b6d4 100%);
+  
+  /* Semantic Colors */
+  --success: #10b981;           /* Emerald green */
+  --success-bg: rgba(16, 185, 129, 0.1);
+  --success-border: rgba(16, 185, 129, 0.2);
+  
+  --warning: #f59e0b;           /* Amber */
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --warning-border: rgba(245, 158, 11, 0.2);
+  
+  --error: #ef4444;             /* Bright red */
+  --error-bg: rgba(239, 68, 68, 0.1);
+  --error-border: rgba(239, 68, 68, 0.2);
+  
+  --info: #06b6d4;              /* Cyan */
+  --info-bg: rgba(6, 182, 212, 0.1);
+  --info-border: rgba(6, 182, 212, 0.2);
+  
+  /* Text Colors */
+  --text-primary: #f9fafb;      /* Pure white */
+  --text-secondary: #9ca3af;    /* Muted gray */
+  --text-tertiary: #6b7280;     /* Subtle gray */
+  --text-inverse: #0a0a0f;      /* For light backgrounds */
+  
+  /* Code Highlighting */
+  --code-bg: #0d0d14;           /* Darker than primary */
+  --code-border: rgba(139, 92, 246, 0.2);
+  --code-keyword: #c084fc;      /* Purple */
+  --code-string: #86efac;       /* Green */
+  --code-function: #67e8f9;     /* Cyan */
+  --code-comment: #64748b;      /* Gray */
+  --code-variable: #fbbf24;     /* Yellow */
+  
+  /* Interactive Elements */
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.16);
+  --border-focus: rgba(124, 58, 237, 0.5);
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 48px rgba(124, 58, 237, 0.3);
+  
+  /* Special Effects */
+  --neon-glow: 0 0 20px rgba(124, 58, 237, 0.8);
+  --glass-bg: rgba(17, 17, 24, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  
+  /* Legacy compatibility */
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+  --card: var(--bg-tertiary);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-secondary);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--brand-primary);
+  --primary-foreground: var(--text-inverse);
+  --secondary: var(--bg-secondary);
+  --secondary-foreground: var(--text-secondary);
+  --muted: var(--bg-hover);
+  --muted-foreground: var(--text-tertiary);
+  --accent: var(--brand-secondary);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--error);
+  --destructive-foreground: var(--text-inverse);
+  --border: var(--border-default);
+  --input: var(--bg-secondary);
+  --ring: var(--border-focus);
+}
+
+:root[data-theme="light"] {
+  /* Base Colors */
+  --bg-primary: #ffffff;        /* Pure white */
+  --bg-secondary: #f9fafb;      /* Off white */
+  --bg-tertiary: #f3f4f6;       /* Light gray */
+  --bg-hover: #e5e7eb;          /* Hover state */
+  --bg-selected: #ddd6fe;       /* Purple tint */
+  
+  /* Brand Colors */
+  --brand-primary: #7c3aed;     /* Electric purple */
+  --brand-secondary: #2563eb;   /* Bright blue */
+  --brand-accent: #ec4899;      /* Hot pink */
+  --brand-gradient: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #06b6d4 100%);
+  
+  /* Semantic Colors */
+  --success: #059669;           /* Darker green for contrast */
+  --success-bg: rgba(16, 185, 129, 0.08);
+  --success-border: rgba(16, 185, 129, 0.3);
+  
+  --warning: #d97706;           /* Darker amber */
+  --warning-bg: rgba(245, 158, 11, 0.08);
+  --warning-border: rgba(245, 158, 11, 0.3);
+  
+  --error: #dc2626;             /* Darker red */
+  --error-bg: rgba(239, 68, 68, 0.08);
+  --error-border: rgba(239, 68, 68, 0.3);
+  
+  --info: #0891b2;              /* Darker cyan */
+  --info-bg: rgba(6, 182, 212, 0.08);
+  --info-border: rgba(6, 182, 212, 0.3);
+  
+  /* Text Colors */
+  --text-primary: #111827;      /* Near black */
+  --text-secondary: #4b5563;    /* Medium gray */
+  --text-tertiary: #9ca3af;     /* Light gray */
+  --text-inverse: #ffffff;      /* White */
+  
+  /* Code Highlighting */
+  --code-bg: #fafafa;
+  --code-border: rgba(139, 92, 246, 0.2);
+  --code-keyword: #7c3aed;
+  --code-string: #059669;
+  --code-function: #0891b2;
+  --code-comment: #9ca3af;
+  --code-variable: #d97706;
+  
+  /* Interactive Elements */
+  --border-default: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.16);
+  --border-focus: rgba(124, 58, 237, 0.4);
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 32px rgba(124, 58, 237, 0.15);
+  
+  /* Special Effects */
+  --neon-glow: 0 0 20px rgba(124, 58, 237, 0.4);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  
+  /* Legacy compatibility */
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+  --card: var(--bg-tertiary);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-secondary);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--brand-primary);
+  --primary-foreground: var(--text-inverse);
+  --secondary: var(--bg-secondary);
+  --secondary-foreground: var(--text-secondary);
+  --muted: var(--bg-hover);
+  --muted-foreground: var(--text-tertiary);
+  --accent: var(--brand-secondary);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--error);
+  --destructive-foreground: var(--text-inverse);
+  --border: var(--border-default);
+  --input: var(--bg-secondary);
+  --ring: var(--border-focus);
+}
+
+/* Default theme (light) for when no theme is set */
+:root {
+  /* Base Colors */
+  --bg-primary: #ffffff;        /* Pure white */
+  --bg-secondary: #f9fafb;      /* Off white */
+  --bg-tertiary: #f3f4f6;       /* Light gray */
+  --bg-hover: #e5e7eb;          /* Hover state */
+  --bg-selected: #ddd6fe;       /* Purple tint */
+  
+  /* Brand Colors */
+  --brand-primary: #7c3aed;     /* Electric purple */
+  --brand-secondary: #2563eb;   /* Bright blue */
+  --brand-accent: #ec4899;      /* Hot pink */
+  --brand-gradient: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #06b6d4 100%);
+  
+  /* Semantic Colors */
+  --success: #059669;           /* Darker green for contrast */
+  --success-bg: rgba(16, 185, 129, 0.08);
+  --success-border: rgba(16, 185, 129, 0.3);
+  
+  --warning: #d97706;           /* Darker amber */
+  --warning-bg: rgba(245, 158, 11, 0.08);
+  --warning-border: rgba(245, 158, 11, 0.3);
+  
+  --error: #dc2626;             /* Darker red */
+  --error-bg: rgba(239, 68, 68, 0.08);
+  --error-border: rgba(239, 68, 68, 0.3);
+  
+  --info: #0891b2;              /* Darker cyan */
+  --info-bg: rgba(6, 182, 212, 0.08);
+  --info-border: rgba(6, 182, 212, 0.3);
+  
+  /* Text Colors */
+  --text-primary: #111827;      /* Near black */
+  --text-secondary: #4b5563;    /* Medium gray */
+  --text-tertiary: #9ca3af;     /* Light gray */
+  --text-inverse: #ffffff;      /* White */
+  
+  /* Code Highlighting */
+  --code-bg: #fafafa;
+  --code-border: rgba(139, 92, 246, 0.2);
+  --code-keyword: #7c3aed;
+  --code-string: #059669;
+  --code-function: #0891b2;
+  --code-comment: #9ca3af;
+  --code-variable: #d97706;
+  
+  /* Interactive Elements */
+  --border-default: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.16);
+  --border-focus: rgba(124, 58, 237, 0.4);
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 32px rgba(124, 58, 237, 0.15);
+  
+  /* Special Effects */
+  --neon-glow: 0 0 20px rgba(124, 58, 237, 0.4);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  
+  /* Legacy compatibility */
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+  --card: var(--bg-tertiary);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-secondary);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--brand-primary);
+  --primary-foreground: var(--text-inverse);
+  --secondary: var(--bg-secondary);
+  --secondary-foreground: var(--text-secondary);
+  --muted: var(--bg-hover);
+  --muted-foreground: var(--text-tertiary);
+  --accent: var(--brand-secondary);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--error);
+  --destructive-foreground: var(--text-inverse);
+  --border: var(--border-default);
+  --input: var(--bg-secondary);
+  --ring: var(--border-focus);
+}
+
+/* Typography */
+--font-sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+--font-serif: Merriweather, ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+--font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+/* Radii */
+--radius-2xs: 4px;
+--radius-xs: 6px;
+--radius-sm: 8px;
+--radius-md: 10px;
+--radius-lg: 12px;
+--radius-xl: 16px;
+--radius: var(--radius-sm);
+
+/* Spacing (8px grid) */
+--space-0: 0px;
+--space-1: 4px;
+--space-2: 8px;
+--space-3: 12px;
+--space-4: 16px;
+--space-5: 20px;
+--space-6: 24px;
+--space-7: 28px;
+--space-8: 32px;
+--space-10: 40px;
+--space-12: 48px;
+--space-16: 64px;
+
+/* Motion - CSS variables with guidance */
+--ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
+--ease-standard: cubic-bezier(0.2, 0, 0, 1);
+--ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+--ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+--dur-2xs: 90ms;   /* taps, ripples */
+--dur-xs: 140ms;   /* hovers, chips */
+--dur-sm: 200ms;   /* buttons, cards */
+--dur-md: 300ms;   /* panels, menus */
+--dur-lg: 450ms;   /* charts enter */
+--dur-xl: 600ms;   /* diff apply, drawer */
+
+--stagger-sm: 60ms;
+--stagger-md: 120ms;
+
+/* Focus and outlines */
+--focus-ring: 0 0 0 3px rgba(124, 58, 237, 0.22);
+--focus-ring-strong: 0 0 0 3px rgba(139, 92, 246, 0.28);
+
+/* Density & grid */
+--container-max: 1440px;
+--grid-gap: 16px;
+
+/* Charts detail */
+--gridline: var(--bg-hover);
+--axis: var(--text-secondary);
+--good: var(--success);
+--caution: var(--warning);
+--bad: var(--error);
+
+/* Animation micro-specs */
+--anim-userMsg: var(--dur-sm) var(--ease-standard);
+--anim-aiMsg: var(--dur-lg) var(--ease-bounce);
+--anim-typing: 1400ms ease-in-out;
+--anim-status: var(--dur-sm) var(--ease-standard);
+--anim-sidebar: var(--dur-md) var(--ease-emphasized);
+--anim-overlay: var(--dur-sm) var(--ease-smooth);
+--anim-input-focus: var(--dur-xs) var(--ease-emphasized);
+--anim-btn-press: var(--dur-2xs) var(--ease-emphasized);
+--anim-btn-hover: var(--dur-xs) var(--ease-smooth);
+--anim-ripple: 400ms var(--ease-smooth);
+--anim-chatLoad: var(--dur-md) var(--ease-standard);
+--anim-skeleton: 2000ms ease-in-out;
+--anim-spinner: 1000ms linear;
+--anim-msgHover: var(--dur-xs) var(--ease-smooth);
+--anim-msgSelect: var(--dur-xs) var(--ease-emphasized);
+--anim-error: 400ms var(--ease-emphasized);
+--anim-success: 600ms var(--ease-bounce);
+--anim-autoScroll: 400ms ease;
+--anim-scrollHint: 800ms ease-in-out;
+
+/* Utility tokens for JS consumption */
+--elevation-card: var(--shadow-sm);
+--elevation-card-hover: var(--shadow-md);
+--elevation-popover: var(--shadow-md);
+--elevation-modal: var(--shadow-lg);
+
+/* Badge system with proper contrast */
+--badge-high-bg: var(--error-bg);
+--badge-high-fg: var(--text-inverse);
+--badge-med-bg: var(--warning-bg);
+--badge-med-fg: var(--text-primary);
+--badge-low-bg: var(--success-bg);
+--badge-low-fg: var(--text-primary);
+
+/* Tab active state */
+--tab-active-bg: var(--accent);
+--tab-active-fg: var(--accent-foreground);
+
+/* Performance tiles */
+--tile-positive: var(--success-bg);
+--tile-neutral: var(--card);
+--tile-negative: var(--error-bg);
+
+/* Chart accents */
+--chart-accent: var(--brand-accent);
+--elevation-press: 0 1px 2px rgba(0,0,0,0.25);
+
+/* Theme transition */
+--theme-transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+
