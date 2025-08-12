@@ -1,99 +1,265 @@
-# Codie — AI Code Review Assistant
+<div align="center">
 
-Secure, efficient, and explainable AI platform for end-to-end code quality:
-- Repository-wide dependency mapping and hotspots
-- Dynamic runtime analysis for regressions
-- Chat-first, explainable reviews with diffs and one-click fixes
-- Adaptive style learning (project-specific)
-- AI test generation (Java via Diffblue, JS/Python via GPT)
-- ROI-ranked refactoring guidance
-- CVE-enriched security remediation
-- Confidence-scored noise filtering
+![Codie Banner](https://via.placeholder.com/800x200/6366f1/ffffff?text=CODIE+-+AI+Code+Review+Assistant)
 
-This repository is a monorepo with backend, frontend, AI orchestration, infra, and comprehensive documentation with automated changelogs and governance.
+# 🤖 Codie — AI Code Review Assistant
 
-## Monorepo Structure
+*Secure, efficient, and explainable AI platform for end-to-end code quality*
 
-- codie-backend: FastAPI microservices (API Gateway, analysis orchestration, static/runtime analysis, style ML, LLM review, security enrichment, scoring, export)
-- codie-frontend: Next.js/React app with Tailwind, Radix UI, Monaco, D3/VisX
-- ai-agents: prompts, pipelines, .clinerules, scripts for codemods and automation
-- infra: Docker Compose for local, Kubernetes manifests/helm, CI/CD configs
-- docs: PRDs, architecture, services, devops, runbooks, ADRs, OpenAPI, diagrams
+[![Backend CI](https://github.com/Cyril-36/Codie/actions/workflows/backend.yml/badge.svg)](https://github.com/Cyril-36/Codie/actions/workflows/backend.yml)
+[![Frontend CI](https://github.com/Cyril-36/Codie/actions/workflows/frontend.yml/badge.svg)](https://github.com/Cyril-36/Codie/actions/workflows/frontend.yml)
+[![OpenAPI CI](https://github.com/Cyril-36/Codie/actions/workflows/openapi.yml/badge.svg)](https://github.com/Cyril-36/Codie/actions/workflows/openapi.yml)
+[![Docs CI](https://github.com/Cyril-36/Codie/actions/workflows/docs.yml/badge.svg)](https://github.com/Cyril-36/Codie/actions/workflows/docs.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Node.js](https://img.shields.io/badge/node.js-18+-green.svg)](https://nodejs.org/)
+[![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 
-## Quick Start
+---
 
-1) Prerequisites: Docker, Docker Compose, Node 18+, Python 3.11+
-2) Copy .env.sample to .env for each module and fill secrets/placeholders
-3) Local run:
-   - docker compose up --build
-4) Open:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000/docs
-   - MinIO: http://localhost:9001
-   - Postgres: localhost:5432, Redis: localhost:6379
+</div>
 
-## Security, Quality, and Docs Governance
+## ✨ Key Features
 
-- Security: TLS (prod), least-privilege tokens, sandboxed runtimes, SBOM & vulnerability scans, secret/PII redaction to LLMs
-- Quality: ruff/black/mypy, ESLint/TS strict, unit/integration/e2e tests, coverage gates
-- Docs & Changelog: Keep a Changelog + SemVer; per-module CHANGELOGs; CI-enforced docs updates with OpenAPI sync and Spectral lint
-- Optional metrics: Docs Coverage, Test Coverage, Perf Regression Score, Security Hygiene Score (disabled by default)
-- Policy-as-code (optional): Oso policies to block merges on missing docs for high-risk changes
+🗺️ **Repository-wide dependency mapping and hotspots**  
+🔍 **Dynamic runtime analysis for regressions**  
+💬 **Chat-first, explainable reviews with diffs and one-click fixes**  
+🎯 **Adaptive style learning (project-specific)**  
+🧪 **AI test generation (Java via Diffblue, JS/Python via GPT)**  
+💰 **ROI-ranked refactoring guidance**  
+🛡️ **CVE-enriched security remediation**  
+🎛️ **Confidence-scored noise filtering**  
 
-## Badges
+> This repository is a monorepo with backend, frontend, AI orchestration, infrastructure, and comprehensive documentation with automated changelogs and governance.
 
-| Backend | Frontend | OpenAPI | Docs |
-|---|---|---|---|
-| ![Backend CI](https://github.com/OWNER/REPO/actions/workflows/backend.yml/badge.svg) | ![Frontend CI](https://github.com/OWNER/REPO/actions/workflows/frontend.yml/badge.svg) | ![OpenAPI CI](https://github.com/OWNER/REPO/actions/workflows/openapi.yml/badge.svg) | ![Docs CI](https://github.com/OWNER/REPO/actions/workflows/docs.yml/badge.svg) |
+## 🏗️ Architecture Overview
 
-> Replace OWNER/REPO with your GitHub slug to activate badges.
-
-<!-- badge:docs-coverage -->
-<!-- badge:test-coverage -->
-<!-- badge:perf-regression -->
-<!-- badge:security-hygiene -->
-
-## Contributor Quickstart
-
-Prereqs:
-- Python 3.11+, Node 20+, Docker + Docker Compose
-
-Backend:
-```bash
-python3 -m pip install -r codie-backend/requirements.txt
-# optional probes via .env
-# ENABLE_POSTGRES_PROBE=true
-# POSTGRES_DSN=postgresql://postgres:postgres@localhost:5432/postgres
-# ENABLE_REDIS_PROBE=true
-# REDIS_URL=redis://localhost:6379/0
-uvicorn codie-backend.app.main:app --reload
-# Health
-curl http://localhost:8000/livez
-curl http://localhost:8000/readyz
+```mermaid
+graph TB
+    A[Frontend - Next.js/React] --> B[API Gateway]
+    B --> C[Analysis Orchestration]
+    C --> D[Static Analysis]
+    C --> E[Runtime Analysis]
+    C --> F[Style ML]
+    C --> G[LLM Review]
+    C --> H[Security Enrichment]
+    I[Database - PostgreSQL] --> C
+    J[Cache - Redis] --> C
+    K[Storage - MinIO] --> C
 ```
 
-Frontend:
+*Architecture diagram showing the core components and data flow*
+
+## 📁 Monorepo Structure
+
+```
+Codie/
+├── 🔧 codie-backend/     # FastAPI microservices
+│   ├── API Gateway
+│   ├── Analysis orchestration
+│   ├── Static/runtime analysis
+│   ├── Style ML & LLM review
+│   └── Security & scoring
+├── 🎨 codie-frontend/     # Next.js/React with Tailwind
+│   ├── Radix UI components
+│   ├── Monaco editor
+│   └── D3/VisX visualizations
+├── 🤖 ai-agents/          # AI prompts & automation
+│   ├── Prompts & pipelines
+│   ├── .clinerules
+│   └── Codemods & scripts
+├── 🐳 infra/              # Infrastructure & DevOps
+│   ├── Docker Compose (local)
+│   ├── Kubernetes manifests
+│   └── CI/CD configurations
+└── 📚 docs/               # Comprehensive documentation
+    ├── PRDs & architecture
+    ├── Service documentation
+    ├── DevOps runbooks
+    └── ADRs & OpenAPI specs
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+- 🐳 Docker & Docker Compose
+- 🟢 Node.js 18+
+- 🐍 Python 3.11+
+- 💾 Git
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Cyril-36/Codie.git
+   cd Codie
+   ```
+
+2. **Set up environment**
+   ```bash
+   # Copy environment templates
+   cp .env.sample .env
+   # Fill in your secrets and configuration
+   ```
+
+3. **Start the application**
+   ```bash
+   docker compose up --build
+   ```
+
+4. **Access the services**
+   - 🌐 **Frontend**: http://localhost:3000
+   - 📡 **Backend API**: http://localhost:8000/docs
+   - 🗄️ **MinIO**: http://localhost:9001
+   - 🐘 **PostgreSQL**: localhost:5432
+   - 🔴 **Redis**: localhost:6379
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Framework**: FastAPI
+- **Language**: Python 3.11+
+- **Database**: PostgreSQL
+- **Cache**: Redis
+- **Storage**: MinIO
+- **Container**: Docker
+
+### Frontend
+- **Framework**: Next.js/React
+- **Styling**: Tailwind CSS
+- **Components**: Radix UI
+- **Editor**: Monaco
+- **Visualization**: D3, VisX
+
+### AI & ML
+- **LLM Integration**: GPT-4, Claude
+- **Code Analysis**: AST parsing
+- **Test Generation**: Diffblue (Java)
+- **Style Learning**: Custom ML models
+
+### DevOps & Infrastructure
+- **Containerization**: Docker, Docker Compose
+- **Orchestration**: Kubernetes
+- **CI/CD**: GitHub Actions
+- **Monitoring**: Custom metrics
+
+## 📸 Screenshots
+
+<div align="center">
+
+### 🏠 Dashboard Overview
+![Dashboard](https://via.placeholder.com/600x400/f3f4f6/374151?text=Dashboard+Overview)
+
+### 📊 Code Analysis Report
+![Analysis](https://via.placeholder.com/600x400/f3f4f6/374151?text=Code+Analysis+Report)
+
+### 💬 AI Chat Interface
+![Chat](https://via.placeholder.com/600x400/f3f4f6/374151?text=AI+Chat+Interface)
+
+</div>
+
+*Screenshots will be updated with actual application images*
+
+## 🛡️ Security & Quality
+
+### Security Features
+- 🔐 **TLS encryption** in production
+- 🎫 **Least-privilege tokens**
+- 📦 **Sandboxed runtimes**
+- 🔍 **SBOM & vulnerability scans**
+- 🤐 **Secret/PII redaction** to LLMs
+
+### Code Quality
+- 🐍 **Python**: ruff, black, mypy
+- 📜 **TypeScript**: ESLint, strict mode
+- 🧪 **Testing**: Unit, integration, E2E
+- 📈 **Coverage gates** enforced
+
+### Documentation Governance
+- 📝 **Keep a Changelog** + SemVer
+- 📚 **Per-module CHANGELOGs**
+- 🤖 **CI-enforced docs updates**
+- 🔍 **OpenAPI sync** with Spectral lint
+- 📊 **Optional metrics**: Docs/Test Coverage, Performance, Security
+
+## 🗺️ Roadmap
+
+### 🎯 Q1 2025
+- [ ] Enhanced ML model training
+- [ ] Advanced security scanning
+- [ ] Performance optimization
+
+### 🎯 Q2 2025
+- [ ] Multi-language support expansion
+- [ ] Real-time collaboration features
+- [ ] Advanced analytics dashboard
+
+### 🎯 Q3 2025
+- [ ] Enterprise SSO integration
+- [ ] Custom rule engine
+- [ ] API marketplace
+
+### 🎯 Q4 2025
+- [ ] Mobile application
+- [ ] Advanced AI models
+- [ ] Global deployment options
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Development Setup
+
+**Backend Development:**
+```bash
+cd codie-backend
+python3 -m pip install -r requirements.txt
+# Configure optional probes via .env
+export ENABLE_POSTGRES_PROBE=true
+export POSTGRES_DSN=postgresql://postgres:postgres@localhost:5432/postgres
+export ENABLE_REDIS_PROBE=true
+export REDIS_URL=redis://localhost:6379/0
+uvicorn app.main:app --reload
+```
+
+**Health Checks:**
+```bash
+curl http://localhost:8000/livez   # Liveness probe
+curl http://localhost:8000/readyz  # Readiness probe
+```
+
+**Frontend Development:**
 ```bash
 cd codie-frontend
-npm ci
-npm run lint --if-present
-npm run build
-npm start
+npm install
+npm run dev
 ```
 
-OpenAPI governance:
-```bash
-python codie-backend/app/openapi_export.py -o docs/openapi/openapi.json
-# Spectral lint (via CI; locally if installed)
-# spectral lint docs/openapi/openapi.json -r .spectral.yaml
-# redocly lint docs/openapi/openapi.json
-```
+### 📋 Contribution Guidelines
+- 🔄 Fork the repository
+- 🌟 Create a feature branch
+- ✅ Add tests for new features
+- 📝 Update documentation
+- 🚀 Submit a pull request
 
-Local DB/Cache (optional):
-- Postgres: localhost:5432
-- Redis: localhost:6379
-- You can add docker-compose services later for frictionless onboarding.
+## 📄 License
 
-## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-MIT
+## 📞 Contact & Support
+
+<div align="center">
+
+### 💬 Get in Touch
+
+[![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-red?logo=github)](https://github.com/Cyril-36/Codie/issues)
+[![Discussions](https://img.shields.io/badge/GitHub-Discussions-blue?logo=github)](https://github.com/Cyril-36/Codie/discussions)
+[![Email](https://img.shields.io/badge/Email-Contact-green?logo=gmail)](mailto:your-email@domain.com)
+
+---
+
+**Made with ❤️ by the Codie Team**
+
+*Empowering developers with intelligent code review*
+
+</div>
