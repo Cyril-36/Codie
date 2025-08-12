@@ -1,9 +1,17 @@
 <div align="center">
-  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 0; border-radius: 15px; margin-bottom: 30px;">
-    <h1 style="color: white; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Codie — AI Code Review Assistant</h1>
-    <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 18px;">Secure, efficient, and explainable AI platform for end-to-end code quality</p>
+  <div style="background: url('.github/assets/codie-banner.png') center/cover; padding: 60px 0; border-radius: 15px; margin-bottom: 30px;">
+    <h1 style="color: white; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+      Codie — AI Code Review Assistant
+    </h1>
+    <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 18px;">
+      Secure, efficient, and explainable AI platform for end-to-end code quality
+    </p>
   </div>
 </div>
+
+<p align="center">
+  <img alt="Custom Codie Banner" src=".github/assets/codie-banner.png" style="display: none;" />
+</p>
 
 [![Backend CI](https://img.shields.io/github/actions/workflow/status/Cyril-36/Codie/backend.yml?branch=main&label=Backend%20CI&logo=github)](https://github.com/Cyril-36/Codie/actions/workflows/backend.yml) [![Frontend CI](https://img.shields.io/github/actions/workflow/status/Cyril-36/Codie/frontend.yml?branch=main&label=Frontend%20CI&logo=github)](https://github.com/Cyril-36/Codie/actions/workflows/frontend.yml) [![OpenAPI CI](https://img.shields.io/github/actions/workflow/status/Cyril-36/Codie/openapi.yml?branch=main&label=OpenAPI%20CI&logo=github)](https://github.com/Cyril-36/Codie/actions/workflows/openapi.yml) [![Docs CI](https://img.shields.io/github/actions/workflow/status/Cyril-36/Codie/docs.yml?branch=main&label=Docs%20CI&logo=github)](https://github.com/Cyril-36/Codie/actions/workflows/docs.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/) [![Node.js 18+](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/) [![Docker Ready](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
 
@@ -43,13 +51,8 @@ graph TB
     
     subgraph "Data Layer"
         PG[("📊 PostgreSQL<br/>Analysis Results")]
-        RD[("⚡ Redis<br/>Cache & Sessions")]
-        MC[("🗄️ MinIO<br/>Artifacts & Reports")]
-    end
-    
-    subgraph "AI Layer"
-        LLM["🤖 LLM Router<br/>GPT-4 + Claude"]
-        ML["📚 Style ML<br/>Project-specific Learning"]
+        RD[("🔴 Redis<br/>Cache & Queues")]
+        S3[("📦 MinIO<br/>Artifacts & Reports")]
     end
     
     UI --> GW
@@ -60,18 +63,18 @@ graph TB
     
     AS --> PG
     RS --> PG
-    RS --> LLM
-    RS --> ML
-    TS --> LLM
+    TS --> PG
+    SS --> PG
     
     AS --> RD
     RS --> RD
     
-    AS --> MC
-    RS --> MC
+    AS --> S3
+    RS --> S3
+    TS --> S3
 ```
 
-*Architecture diagram showing the core components and data flow*
+Architecture diagram showing the core components and data flow
 
 ## 📁 Monorepo Structure
 
@@ -106,10 +109,10 @@ Codie/
 
 ### Prerequisites
 
-- 🐳 Docker & Docker Compose
-- 🟢 Node.js 18+
-- 🐍 Python 3.11+
-- 💾 Git
+• 🐳 Docker & Docker Compose  
+• 🟢 Node.js 18+  
+• 🐍 Python 3.11+  
+• 💾 Git  
 
 ### Installation
 
@@ -132,11 +135,11 @@ Codie/
    ```
 
 4. **Access the services**
-   - 🌐 Frontend: http://localhost:5174
-   - 📡 Backend API: http://localhost:8000/docs
-   - 🗄️ MinIO: http://localhost:9001
-   - 🐘 PostgreSQL: localhost:5432
-   - 🔴 Redis: localhost:6379
+   • 🌐 Frontend: [http://localhost:5174](http://localhost:5174)  
+   • 📡 Backend API: [http://localhost:8000/docs](http://localhost:8000/docs)  
+   • 🗄️ MinIO: [http://localhost:9001](http://localhost:9001)  
+   • 🐘 PostgreSQL: localhost:5432  
+   • 🔴 Redis: localhost:6379  
 
 ## 🛠️ Tech Stack
 
@@ -155,40 +158,37 @@ Codie/
 ## 📸 Screenshots
 
 ### 🏠 Dashboard Overview
-Coming soon - Dashboard interface
+*Coming soon - Dashboard interface*
 
 ### 📊 Code Analysis Report
-Coming soon - Analysis report view
+*Coming soon - Analysis report view*
 
 ### 💬 AI Chat Interface
-Coming soon - AI chat interface
+*Coming soon - AI chat interface*
 
 *Screenshots will be updated with actual application images*
 
 ## 🛡️ Security & Quality
 
 ### Security Features
-
-- 🔐 TLS encryption in production
-- 🎫 Least-privilege tokens
-- 📦 Sandboxed runtimes
-- 🔍 SBOM & vulnerability scans
-- 🤐 Secret/PII redaction to LLMs
+• 🔐 TLS encryption in production  
+• 🎫 Least-privilege tokens  
+• 📦 Sandboxed runtimes  
+• 🔍 SBOM & vulnerability scans  
+• 🤐 Secret/PII redaction to LLMs  
 
 ### Code Quality
-
-- 🐍 Python: ruff, black, mypy
-- 📜 TypeScript: ESLint, strict mode
-- 🧪 Testing: Unit, integration, E2E
-- 📈 Coverage gates enforced
+• 🐍 Python: ruff, black, mypy  
+• 📜 TypeScript: ESLint, strict mode  
+• 🧪 Testing: Unit, integration, E2E  
+• 📈 Coverage gates enforced  
 
 ### Documentation Governance
-
-- 📝 Keep a Changelog + SemVer
-- 📚 Per-module CHANGELOGs
-- 🤖 CI-enforced docs updates
-- 🔍 OpenAPI sync with Spectral lint
-- 📊 Optional metrics: Docs/Test Coverage, Performance, Security
+• 📝 Keep a Changelog + SemVer  
+• 📚 Per-module CHANGELOGs  
+• 🤖 CI-enforced docs updates  
+• 🔍 OpenAPI sync with Spectral lint  
+• 📊 Optional metrics: Docs/Test Coverage, Performance, Security  
 
 ## 🤝 Contributing
 
@@ -223,12 +223,11 @@ npm run dev
 ```
 
 ### 📋 Contribution Guidelines
-
-- 🔄 Fork the repository
-- 🌟 Create a feature branch
-- ✅ Add tests for new features
-- 📝 Update documentation
-- 🚀 Submit a pull request
+• 🔄 Fork the repository  
+• 🌟 Create a feature branch  
+• ✅ Add tests for new features  
+• 📝 Update documentation  
+• 🚀 Submit a pull request  
 
 ## 📄 License
 
@@ -238,11 +237,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### 💬 Get in Touch
 
-[![GitHub Issues](https://img.shields.io/github/issues/Cyril-36/Codie?style=flat-square&logo=github)](https://github.com/Cyril-36/Codie/issues) [![Discussions](https://img.shields.io/github/discussions/Cyril-36/Codie?style=flat-square&logo=github)](https://github.com/Cyril-36/Codie/discussions) [![Email](https://img.shields.io/badge/Email-Contact-blue?style=flat-square&logo=gmail)](mailto:cyrilchaitanya@gmail.com)
+[![GitHub Issues](https://img.shields.io/github/issues/Cyril-36/Codie.svg)](https://github.com/Cyril-36/Codie/issues) [![Discussions](https://img.shields.io/github/discussions/Cyril-36/Codie.svg)](https://github.com/Cyril-36/Codie/discussions) [![Email](https://img.shields.io/badge/Email-Contact-blue.svg)](mailto:cyrilchaitanya@gmail.com)
 
-**Contact Email**: cyrilchaitanya@gmail.com
+Contact Email: [cyrilchaitanya@gmail.com](mailto:cyrilchaitanya@gmail.com)
 
 ---
 
-*Made with ❤️ by the Codie Team*  
-**Empowering developers with intelligent code review**
+**Made with ❤️ by the Codie Team**  
+*Empowering developers with intelligent code review*
