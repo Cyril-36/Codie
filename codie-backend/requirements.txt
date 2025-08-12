@@ -13,6 +13,7 @@ passlib[bcrypt]==1.7.4
 # Data / DB
 SQLAlchemy==2.0.32
 psycopg[binary]==3.2.1
+aiosqlite==0.20.0
 alembic==1.13.2
 
 # Caching / Queue (placeholder; choose Dramatiq or Celery later)
