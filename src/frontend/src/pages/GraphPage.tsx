@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { PageTransition } from '../components/Transitions/PageTransition';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
-import { getCodeGraph, type GraphResponse } from '../services/api';
+import { getCodeGraph, type GraphResponse } from '../services/graphApi';
 
 export default function GraphPage() {
   const [loading, setLoading] = useState(false);

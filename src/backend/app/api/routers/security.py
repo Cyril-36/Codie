@@ -15,6 +15,5 @@ class SecReq(BaseModel):
 
 @router.post("/security")
 async def security_scan(req: SecReq):
-    # Only python supported for now; others can be added later.
-    result = scan_requirements(req.requirements)
+    result = await scan_requirements(req.requirements, req.language)
     return result

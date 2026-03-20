@@ -11,7 +11,7 @@ import Input from "../components/ui/Input";
 import Select from "../components/ui/Select";
 import { useResponsive } from "../hooks/useResponsive";
 import { useScreenReaderAnnouncement, ariaPatterns } from "../hooks/useScreenReader";
-import { generateTests, type TestGenRequest, type TestGenResponse } from "../services/api";
+import { generateTests, type TestGenRequest, type TestGenResponse } from "../services/testgenApi";
 
 const CodeEditor = React.lazy(() => import("../components/CodeEditor"));
 const languageOptions = [

@@ -1,14 +1,19 @@
 from __future__ import annotations
 
+import json
 import logging
+from datetime import datetime, timezone
 from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel
+from sqlalchemy import desc, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...services.ai_analyzer import analyze_code
 from ...services.complexity_analyzer import compute_complexity
 from ...core.db import get_db
-from sqlalchemy.ext.asyncio import AsyncSession
+from ...models.analysis import Analysis
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +36,7 @@ class AnalyzeResponse(BaseModel):
     metrics: dict
     language: str
     timestamp: str
+    id: Optional[int] = None
 
 
 class FileAnalysisRequest(BaseModel):
@@ -38,6 +44,34 @@ class FileAnalysisRequest(BaseModel):
 
     language: str
     show_all: bool = False
+
+
+async def _save_analysis(
+    db: AsyncSession,
+    language: str,
+    complexity: float,
+    suggestions: list[str],
+    metrics: dict,
+    code: Optional[str] = None,
+    filename: Optional[str] = None,
+    analysis_type: str = "code_review",
+) -> Analysis:
+    """Save analysis result to database."""
+    score = max(0, 100 - min(complexity * 5, 40) + min(len(suggestions) * 2, 20))
+    record = Analysis(
+        language=language,
+        complexity=complexity,
+        code=code,
+        suggestions=json.dumps(suggestions),
+        analysis_type=analysis_type,
+        filename=filename,
+        score=score,
+        metrics=json.dumps(metrics),
+    )
+    db.add(record)
+    await db.commit()
+    await db.refresh(record)
+    return record
 
 
 @router.post("/analyze")
@@ -66,14 +100,22 @@ async def analyze_snippet(
             "suggestions_count": len(suggestions),
         }
 
+        # Save to DB
+        record = await _save_analysis(
+            db, request.language, complexity, suggestions, metrics, code=request.code
+        )
+
         return AnalyzeResponse(
             complexity=complexity,
             suggestions=suggestions,
             metrics=metrics,
             language=request.language,
-            timestamp=datetime.now().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            id=record.id,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Analysis failed: {e}")
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
@@ -115,14 +157,23 @@ async def analyze_file(
             "filename": file.filename,
         }
 
+        # Save to DB
+        record = await _save_analysis(
+            db, language, complexity, suggestions, metrics,
+            code=code, filename=file.filename,
+        )
+
         return AnalyzeResponse(
             complexity=complexity,
             suggestions=suggestions,
             metrics=metrics,
             language=language,
-            timestamp=datetime.now().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            id=record.id,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"File analysis failed: {e}")
         raise HTTPException(status_code=500, detail=f"File analysis failed: {str(e)}")
@@ -132,26 +183,35 @@ async def analyze_file(
 async def get_analysis_history(
     page: int = 1, size: int = 10, db: AsyncSession = Depends(get_db)
 ) -> dict:
-    """Get analysis history"""
+    """Get analysis history (real DB query)"""
     try:
-        # This would typically query the database
-        # For now, return mock data
-        mock_items = [
+        count_result = await db.execute(select(func.count(Analysis.id)))
+        total = count_result.scalar() or 0
+
+        offset = (page - 1) * size
+        result = await db.execute(
+            select(Analysis)
+            .order_by(desc(Analysis.created_at))
+            .offset(offset)
+            .limit(size)
+        )
+        rows = result.scalars().all()
+
+        items = [
             {
-                "id": i,
-                "language": "python",
-                "complexity": 8.5,
-                "created_at": "2024-01-15T10:30:00Z",
+                "id": r.id,
+                "language": r.language,
+                "complexity": r.complexity,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+                "filename": r.filename,
+                "analysis_type": r.analysis_type,
+                "score": r.score,
             }
-            for i in range(1, 11)
+            for r in rows
         ]
 
-        return {"items": mock_items, "total": 100, "page": page, "size": size}
+        return {"items": items, "total": total, "page": page, "size": size}
 
     except Exception as e:
         logger.error(f"Failed to get analysis history: {e}")
         raise HTTPException(status_code=500, detail="Failed to get analysis history")
-
-
-# Import datetime for timestamp generation
-from datetime import datetime

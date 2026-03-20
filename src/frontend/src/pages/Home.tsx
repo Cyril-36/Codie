@@ -12,7 +12,7 @@ import Card from "../components/ui/Card";
 import Select from "../components/ui/Select";
 import { useResponsive } from "../hooks/useResponsive";
 import { useScreenReaderAnnouncement, ariaPatterns } from "../hooks/useScreenReader";
-import { analyzeSnippet, analyzeFile, type AnalyzeResponse } from "../services/api";
+import { analyzeSnippet, analyzeFile, type AnalyzeResponse } from "../services/analysisApi";
 
 const CodeEditor = React.lazy(() => import("../components/CodeEditor"));
 const languageOptions = [
@@ -340,7 +340,10 @@ export default function Home() {
                         initial="initial"
                         animate="animate"
                       >
-                        {result.suggestions.map((suggestion, index) => (
+                        {result.suggestions.map((suggestion, index) => {
+                          const msg = typeof suggestion === 'string' ? suggestion : suggestion.message;
+                          const conf = typeof suggestion === 'string' ? 0.7 : suggestion.confidence;
+                          return (
                           <motion.div
                             key={index}
                             variants={{
@@ -351,20 +354,21 @@ export default function Home() {
                           >
                             <SuggestionCard
                               suggestion={{
-                                message: suggestion.message,
-                                confidence: suggestion.confidence,
-                                severity: suggestion.confidence > 0.8 ? 'high' : suggestion.confidence > 0.5 ? 'medium' : 'low',
+                                message: msg,
+                                confidence: conf,
+                                severity: conf > 0.8 ? 'high' : conf > 0.5 ? 'medium' : 'low',
                                 code: code.split('\n')[index] || '',
                                 line: index + 1,
                               }}
                               index={index}
                               onApplyFix={() => {
-                                announce(`Applied suggestion: ${suggestion.message}`);
+                                announce(`Applied suggestion: ${msg}`);
                               }}
                               className="card-hover"
                             />
                           </motion.div>
-                        ))}
+                          );
+                        })}
                       </motion.div>
                     </div>
                   )}

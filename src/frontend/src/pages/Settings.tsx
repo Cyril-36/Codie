@@ -1,11 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { PageTransition } from "../components/Transitions/PageTransition";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 
 export default function Settings() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("auto");
+
+  useEffect(() => {
+    const saved = localStorage.getItem('codie-theme') ?? 'auto';
+    setTheme(saved);
+    document.documentElement.setAttribute('data-theme', saved);
+  }, []);
+
+  const handleSave = () => {
+    localStorage.setItem('codie-theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+  };
+
+  const handleReset = () => {
+    localStorage.removeItem('codie-theme');
+    setTheme('auto');
+    document.documentElement.setAttribute('data-theme', 'auto');
+  };
 
   return (
     <PageTransition type="fade">
@@ -37,8 +54,8 @@ export default function Settings() {
           </div>
         </Card>
         <div className="flex gap-4 justify-center">
-          <Button className="btn-anim">💾 Save Settings</Button>
-          <Button variant="outline" className="btn-anim">🔄 Reset</Button>
+          <Button className="btn-anim" onClick={handleSave}>💾 Save Settings</Button>
+          <Button variant="outline" className="btn-anim" onClick={handleReset}>🔄 Reset</Button>
         </div>
       </div>
     </PageTransition>

@@ -1,7 +1,7 @@
 import { Editor } from "@monaco-editor/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import * as api from "../services/api";
+import { analyzeSnippet } from "../services/analysisApi";
 
 type Props = {
   language: "javascript" | "typescript" | "python" | string;
@@ -93,10 +93,11 @@ export function CodeEditor({ language, value, onChange }: Props) {
     setProgressVisible(true);
     try {
       const content = await readFileLikeToString(file);
-      const analysis = await (api as any).analyzeCode({ name: (file as any).name, content: content });
+      const detectedLang = ext === "py" ? "python" : ext === "ts" ? "typescript" : "javascript";
+      const analysis = await analyzeSnippet(detectedLang, content, false);
       setResult(analysis);
       setStatus("success");
-      setHistory(prev => [{ id: String(Date.now()), filename: (file as any).name, score: analysis?.score ?? 0 }, ...prev].slice(0, 10));
+      setHistory(prev => [{ id: String(Date.now()), filename: (file as any).name, score: (analysis as any)?.score ?? analysis?.complexity ?? 0 }, ...prev].slice(0, 10));
     } catch (e: any) {
       setStatus("error");
       const isServerError = e?.name === "ServerError";

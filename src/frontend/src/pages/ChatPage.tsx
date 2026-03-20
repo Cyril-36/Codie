@@ -6,7 +6,7 @@ import { PageTransition } from "../components/Transitions/PageTransition";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import Input from "../components/ui/Input";
-import { sendChatMessage } from "../services/api";
+import { sendChatMessage } from "../services/chatApi";
 
 interface ChatMessage {
   id: string;
@@ -72,7 +72,7 @@ export default function ChatPage() {
       console.error("Chat error:", err);
       const errorMessage: ChatMessage = {
         id: Math.random().toString(36).substr(2, 9),
-        text: "Sorry, I'm having trouble responding right now. Please check that your Gemini API key is configured and try again.",
+        text: "Sorry, I couldn't get a response right now. Please check your connection and try again.",
         timestamp: new Date(),
         isUser: false,
       };

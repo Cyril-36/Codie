@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import AsyncIterator
 
 from sqlalchemy import desc, select
@@ -20,7 +20,7 @@ async def render_markdown_report(db: AsyncSession) -> AsyncIterator[bytes]:
     """
     Stream a lightweight Markdown report.
     """
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     yield f"# Codie Analysis Report\n\nGenerated: {now}\n\n".encode("utf-8")
     yield b"| id | language | complexity | created_at |\n"
     yield b"|---:|:---------|-----------:|:-----------|\n"

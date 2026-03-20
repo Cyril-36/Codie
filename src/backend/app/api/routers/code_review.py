@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
@@ -64,9 +65,11 @@ async def review_code(
             suggestions=suggestions,
             score=score,
             language=request.language,
-            timestamp=datetime.now().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Code review failed: {e}")
         raise HTTPException(status_code=500, detail=f"Code review failed: {str(e)}")
@@ -111,13 +114,11 @@ async def review_file(
             suggestions=suggestions,
             score=score,
             language=language,
-            timestamp=datetime.now().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"File review failed: {e}")
         raise HTTPException(status_code=500, detail=f"File review failed: {str(e)}")
-
-
-# Import datetime for timestamp generation
-from datetime import datetime

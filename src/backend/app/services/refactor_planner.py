@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List
 
 from .graph_builder import build_graph
@@ -19,7 +19,7 @@ def build_refactor_plan(repo_root: str, top_n: int = 10) -> Dict:
     g = build_graph(repo_root)
     nodes = g.get("nodes", [])
     if not nodes:
-        return {"generated_at": datetime.utcnow().isoformat() + "Z", "suggestions": []}
+        return {"generated_at": datetime.now(timezone.utc).isoformat() + "Z", "suggestions": []}
 
     # map id -> (complexity, degree, file)
     comp = {n["id"]: int(n.get("complexity", 1)) for n in nodes}
@@ -55,6 +55,6 @@ def build_refactor_plan(repo_root: str, top_n: int = 10) -> Dict:
 
     suggestions.sort(key=lambda s: s["impact_score"], reverse=True)
     return {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": datetime.now(timezone.utc).isoformat() + "Z",
         "suggestions": suggestions[:top_n],
     }

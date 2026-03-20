@@ -11,6 +11,7 @@ from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...core.db import get_db
+from ...core.security import get_current_user
 from ...models.analysis import Analysis
 from ...services.report_renderer import (
     render_markdown_report,
@@ -29,12 +30,24 @@ async def _stream_rows(db: AsyncSession):
 
 
 @router.get("/export/csv")
-async def export_csv(db: AsyncSession = Depends(get_db)):
+async def export_csv(db: AsyncSession = Depends(get_db), _user=Depends(get_current_user)):
     async def generator() -> AsyncIterator[bytes]:
-        # Match test expectation: header starts with "id,language,complexity"
-        yield b"id,language,complexity\n"
+        # Header starts with "id,language,complexity" to match existing tests
+        yield b"id,language,complexity,score,filename,analysis_type,created_at\n"
         async for r in _stream_rows(db):
-            line = f"{r.id},{r.language},{r.complexity}\n"
+            # Sanitize text fields: replace commas to avoid CSV corruption
+            filename = (r.filename or "").replace(",", ";").replace("\n", " ")
+            analysis_type = (r.analysis_type or "").replace(",", ";").replace("\n", " ")
+            created = (
+                r.created_at.isoformat()
+                if hasattr(r.created_at, "isoformat")
+                else str(r.created_at or "")
+            )
+            line = (
+                f"{r.id},{r.language},{r.complexity},"
+                f"{r.score if r.score is not None else ''},"
+                f"{filename},{analysis_type},{created}\n"
+            )
             yield line.encode("utf-8")
 
     headers = {"Content-Disposition": 'attachment; filename="codie-history.csv"'}
@@ -42,7 +55,7 @@ async def export_csv(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/export/json")
-async def export_json(db: AsyncSession = Depends(get_db)):
+async def export_json(db: AsyncSession = Depends(get_db), _user=Depends(get_current_user)):
     async def generator() -> AsyncIterator[bytes]:
         first = True
         yield b"["
@@ -56,6 +69,9 @@ async def export_json(db: AsyncSession = Depends(get_db)):
                 "id": r.id,
                 "language": r.language,
                 "complexity": r.complexity,
+                "score": r.score,
+                "filename": r.filename,
+                "analysis_type": r.analysis_type,
                 "created_at": created,
             }
             chunk = json.dumps(obj, separators=(",", ":"), ensure_ascii=False)
@@ -73,7 +89,7 @@ async def export_json(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/export/md")
-async def export_md(db: AsyncSession = Depends(get_db)):
+async def export_md(db: AsyncSession = Depends(get_db), _user=Depends(get_current_user)):
     headers = {"Content-Disposition": 'attachment; filename="codie-report.md"'}
     return StreamingResponse(
         render_markdown_report(db), media_type="text/markdown", headers=headers
@@ -81,7 +97,7 @@ async def export_md(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/export/pdf")
-async def export_pdf(db: AsyncSession = Depends(get_db)):
+async def export_pdf(db: AsyncSession = Depends(get_db), _user=Depends(get_current_user)):
     headers = {"Content-Disposition": 'attachment; filename="codie-report.pdf"'}
     # Prefer styled PDF; fallback to minimal if anything goes wrong
     try:

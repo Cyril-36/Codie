@@ -1,41 +1,41 @@
 import { motion } from 'framer-motion';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { PageTransition } from '../components/Transitions/PageTransition';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
-import { fetchHistory } from '../services/api';
+import { fetchHistory, deleteHistoryItem, clearHistory, type HistoryItem } from '../services/historyApi';
 
 export default function History() {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<any | null>(null); // Changed type to any as HistoryResponse is removed
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [size] = useState(10);
+  const [language, setLanguage] = useState<string>('');
+  const [analysisType, setAnalysisType] = useState<string>('');
 
-  const handleFetchHistory = useCallback(async (pageNum = page) => {
-    setLoading(true);
-    setError(null);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['history', page, size, language, analysisType],
+    queryFn: () => fetchHistory(page, size, language || undefined, analysisType || undefined),
+  });
 
-    try {
-      const response = await fetchHistory(pageNum, size); // Changed fetchHistory to getHistory
-      setData(response);
-      setPage(pageNum);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch history";
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, size]);
+  const deleteMutation = useMutation({
+    mutationFn: deleteHistoryItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['history'] });
+    },
+  });
 
-  useEffect(() => {
-    handleFetchHistory(1);
-  }, [handleFetchHistory]);
+  const clearMutation = useMutation({
+    mutationFn: clearHistory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['history'] });
+    },
+  });
 
-  const getLanguageColor = (language: string) => {
-    switch (language.toLowerCase()) {
+  const getLanguageColor = (lang: string) => {
+    switch (lang.toLowerCase()) {
       case 'python': return 'bg-primary/10 text-primary border-primary/20';
       case 'javascript': return 'bg-warning/10 text-warning border-warning/20';
       case 'typescript': return 'bg-primary/10 text-primary border-primary/20';
@@ -72,15 +72,36 @@ export default function History() {
           </p>
         </div>
 
-        {/* Action Button */}
-        <div className="flex justify-center">
-          <Button
-            onClick={() => handleFetchHistory(1)}
-            disabled={loading}
-            loading={loading}
-            className="btn-anim"
+        {/* Filters */}
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <select
+            value={language}
+            onChange={(e) => { setLanguage(e.target.value); setPage(1); }}
+            className="border rounded px-3 py-1.5 text-sm bg-white dark:bg-gray-800 text-foreground"
           >
-            {loading ? "Loading History..." : "📊 Refresh History"}
+            <option value="">All Languages</option>
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="typescript">TypeScript</option>
+            <option value="java">Java</option>
+          </select>
+          <select
+            value={analysisType}
+            onChange={(e) => { setAnalysisType(e.target.value); setPage(1); }}
+            className="border rounded px-3 py-1.5 text-sm bg-white dark:bg-gray-800 text-foreground"
+          >
+            <option value="">All Types</option>
+            <option value="code_review">Code Review</option>
+            <option value="security">Security</option>
+            <option value="style">Style</option>
+          </select>
+          <Button
+            onClick={() => clearMutation.mutate()}
+            disabled={clearMutation.isPending || !data?.items.length}
+            variant="outline"
+            size="sm"
+          >
+            {clearMutation.isPending ? "Clearing..." : "Clear All"}
           </Button>
         </div>
 
@@ -88,8 +109,8 @@ export default function History() {
         {error && (
           <Card className="border-destructive/20 bg-destructive/10 fade-in">
             <div className="flex items-center gap-2 text-destructive">
-              <span className="text-lg">❌</span>
-              <span>Error: {error}</span>
+              <span className="text-lg">&#10060;</span>
+              <span>Error: {error instanceof Error ? error.message : "Failed to fetch history"}</span>
             </div>
           </Card>
         )}
@@ -129,8 +150,14 @@ export default function History() {
               <h3 className="sticky-subheader text-lg font-semibold text-foreground mb-4">
                 Analysis History ({data.items.length} of {data.total})
               </h3>
+              {data.items.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p className="text-lg font-medium mb-2">No analyses yet</p>
+                  <p className="text-sm">Run your first code analysis to see it here</p>
+                </div>
+              ) : (
               <div className="space-y-3 list-stagger scrollable max-h-96">
-                {data.items.map((item: any, index: number) => ( // Changed type to any
+                {data.items.map((item: HistoryItem, index: number) => (
                   <motion.div
                     key={item.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -140,7 +167,7 @@ export default function History() {
                     style={{ '--i': index } as React.CSSProperties}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="text-lg">📄</div>
+                      <div className="text-lg">&#128196;</div>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-medium text-foreground">
@@ -149,29 +176,70 @@ export default function History() {
                           <Badge className={getLanguageColor(item.language)}>
                             {item.language}
                           </Badge>
+                          {item.analysis_type && (
+                            <Badge className="bg-muted text-muted-foreground text-xs">
+                              {item.analysis_type}
+                            </Badge>
+                          )}
                         </div>
                         <div className="text-sm text-muted-foreground">
                           {formatDate(item.created_at)}
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm text-muted-foreground mb-1">
-                        Complexity
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <div className="text-sm text-muted-foreground mb-1">
+                          Complexity
+                        </div>
+                        <div className={`text-lg font-bold ${getComplexityColor(item.complexity)}`}>
+                          {item.complexity.toFixed(1)}
+                        </div>
                       </div>
-                      <div className={`text-lg font-bold ${getComplexityColor(item.complexity)}`}>
-                        {item.complexity.toFixed(1)}
-                      </div>
+                      <button
+                        onClick={() => deleteMutation.mutate(item.id)}
+                        disabled={deleteMutation.isPending}
+                        className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                        title="Delete"
+                      >
+                        &#128465;
+                      </button>
                     </div>
                   </motion.div>
                 ))}
               </div>
+              )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center gap-2 mt-4">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page <= 1}
+                  >
+                    Previous
+                  </Button>
+                  <span className="flex items-center text-sm text-muted-foreground px-3">
+                    Page {page} of {totalPages}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    disabled={page >= totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
             </Card>
           </div>
         )}
 
         {/* Loading State */}
-        {loading && !data && (
+        {isLoading && !data && (
           <Card className="card-elevate fade-in">
             <div className="text-center py-8">
               <div className="flex justify-center mb-4">

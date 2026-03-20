@@ -5,176 +5,31 @@ import { PageTransition } from "../components/Transitions/PageTransition";
 import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
-import { getRefactorPlan, type RefactorResponse } from "../services/api";
-
-// Mock data for demo purposes
-const mockRefactorData: RefactorResponse = {
-  metrics: {
-    complexity: 7.2,
-    maintainability: 6.5,
-    testability: 5.8,
-  },
-  suggestions: [
-    {
-      file: "src/utils/math.py",
-      type: "Extract Function",
-      description:
-        "The fibonacci function has high cyclomatic complexity. Break it into smaller functions or use an iterative approach.",
-      priority: "high",
-      riskLevel: "high",
-      impact: "Significant reduction in code complexity and maintainability.",
-      estimatedEffort: "1-2 hours",
-      codeSpans: [
-        { line: 10, column: 1, length: 25, code: "def fibonacci(n: int) -> int:" },
-        { line: 11, column: 1, length: 15, code: "    if n <= 0:" },
-        { line: 12, column: 1, length: 16, code: "        return 0" },
-        { line: 13, column: 1, length: 17, code: "    elif n == 1:" },
-        { line: 14, column: 1, length: 16, code: "        return 1" },
-        { line: 15, column: 1, length: 12, code: "    else:" },
-        { line: 16, column: 1, length: 45, code: "        return fibonacci(n - 1) + fibonacci(n - 2)" },
-      ],
-      diff: {
-        before: "def fibonacci(n: int) -> int:\n    if n <= 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        return fibonacci(n - 1) + fibonacci(n - 2)",
-        after: "def fibonacci(n: int) -> int:\n    if n <= 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        return fibonacci(n - 1) + fibonacci(n - 2)",
-        hunks: [
-          {
-            oldStart: 10,
-            oldLines: 7,
-            newStart: 10,
-            newLines: 7,
-            lines: [
-              "@@ -10,7 +10,7 @@",
-              " def fibonacci(n: int) -> int:",
-              "     if n <= 0:",
-              "         return 0",
-              "     elif n == 1:",
-              "         return 1",
-              "     else:",
-              "         return fibonacci(n - 1) + fibonacci(n - 2)"
-            ]
-          }
-        ]
-      },
-      dependencies: ["fibonacci"],
-    },
-    {
-      file: "src/utils/math.py",
-      type: "Add Type Hints",
-      description:
-        "Add type hints to fibonacci for better readability: def fibonacci(n: int) -> int",
-      priority: "medium",
-      riskLevel: "low",
-      impact: "Improved code readability and maintainability.",
-      estimatedEffort: "0.5-1 hour",
-      codeSpans: [
-        { line: 10, column: 1, length: 25, code: "def fibonacci(n: int) -> int:" },
-        { line: 11, column: 1, length: 15, code: "    if n <= 0:" },
-        { line: 12, column: 1, length: 16, code: "        return 0" },
-        { line: 13, column: 1, length: 17, code: "    elif n == 1:" },
-        { line: 14, column: 1, length: 16, code: "        return 1" },
-        { line: 15, column: 1, length: 12, code: "    else:" },
-        { line: 16, column: 1, length: 45, code: "        return fibonacci(n - 1) + fibonacci(n - 2)" },
-      ],
-      diff: {
-        before: "def fibonacci(n: int) -> int:\n    if n <= 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        return fibonacci(n - 1) + fibonacci(n - 2)",
-        after: "def fibonacci(n: int) -> int:\n    if n <= 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        return fibonacci(n - 1) + fibonacci(n - 2)",
-        hunks: [
-          {
-            oldStart: 10,
-            oldLines: 7,
-            newStart: 10,
-            newLines: 7,
-            lines: [
-              "@@ -10,7 +10,7 @@",
-              " def fibonacci(n: int) -> int:",
-              "     if n <= 0:",
-              "         return 0",
-              "     elif n == 1:",
-              "         return 1",
-              "     else:",
-              "         return fibonacci(n - 1) + fibonacci(n - 2)"
-            ]
-          }
-        ]
-      },
-      dependencies: ["fibonacci"],
-    },
-    {
-      file: "src/utils/math.py",
-      type: "Memoization",
-      description:
-        "Use functools.lru_cache to memoize fibonacci and reduce time complexity from O(2^n) to O(n).",
-      priority: "medium",
-      riskLevel: "medium",
-      impact: "Significant reduction in time complexity and potential memory usage.",
-      estimatedEffort: "2-3 hours",
-      codeSpans: [
-        { line: 10, column: 1, length: 25, code: "def fibonacci(n: int) -> int:" },
-        { line: 11, column: 1, length: 15, code: "    if n <= 0:" },
-        { line: 12, column: 1, length: 16, code: "        return 0" },
-        { line: 13, column: 1, length: 17, code: "    elif n == 1:" },
-        { line: 14, column: 1, length: 16, code: "        return 1" },
-        { line: 15, column: 1, length: 12, code: "    else:" },
-        { line: 16, column: 1, length: 45, code: "        return fibonacci(n - 1) + fibonacci(n - 2)" },
-      ],
-      diff: {
-        before: "def fibonacci(n: int) -> int:\n    if n <= 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        return fibonacci(n - 1) + fibonacci(n - 2)",
-        after: "def fibonacci(n: int) -> int:\n    if n <= 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        return fibonacci(n - 1) + fibonacci(n - 2)",
-        hunks: [
-          {
-            oldStart: 10,
-            oldLines: 7,
-            newStart: 10,
-            newLines: 7,
-            lines: [
-              "@@ -10,7 +10,7 @@",
-              " def fibonacci(n: int) -> int:",
-              "     if n <= 0:",
-              "         return 0",
-              "     elif n == 1:",
-              "         return 1",
-              "     else:",
-              "         return fibonacci(n - 1) + fibonacci(n - 2)"
-            ]
-          }
-        ]
-      },
-      dependencies: ["fibonacci"],
-    },
-  ],
-};
+import { useToasts } from "../components/ui/ToastProvider";
+import { getRefactorPlan, type RefactorResponse } from "../services/refactorApi";
 
 export default function RefactorPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RefactorResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [autoLoad, setAutoLoad] = useState(true);
-  const [useMockData, setUseMockData] = useState(false);
+  const { show } = useToasts();
 
   const handleGetPlan = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      if (useMockData) {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setResult(mockRefactorData);
-      } else {
-        const response = await getRefactorPlan();
-        setResult(response);
-      }
+      const response = await getRefactorPlan();
+      setResult(response);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to get refactor plan";
       setError(errorMessage);
-      // Fallback to mock data on error
-      setResult(mockRefactorData);
-      setUseMockData(true);
     } finally {
       setLoading(false);
     }
-  }, [useMockData]);
+  }, []);
 
   useEffect(() => {
     if (autoLoad) {
@@ -183,10 +38,15 @@ export default function RefactorPage() {
     }
   }, [autoLoad, handleGetPlan]);
 
-  const handleApplyFix = (suggestion: RefactorResponse["suggestions"][number]) => {
-    // In a real app, this would apply the fix to the code editor or open a diff
-    // eslint-disable-next-line no-console
-    console.log("Applying fix:", suggestion);
+  const handleApplyFix = async (suggestion: RefactorResponse["suggestions"][number]) => {
+    try {
+      await navigator.clipboard.writeText(
+        `${suggestion.type}: ${suggestion.description} (File: ${suggestion.file})`
+      );
+      show({ message: 'Fix details copied to clipboard', variant: 'success' });
+    } catch {
+      show({ message: 'Could not copy to clipboard', variant: 'error' });
+    }
   };
 
   const handleCopySuggestion = async (
@@ -196,19 +56,26 @@ export default function RefactorPage() {
       await navigator.clipboard.writeText(
         `${suggestion.type}: ${suggestion.description} (File: ${suggestion.file})`
       );
-    } catch (err) {
-      console.error("Failed to copy suggestion:", err);
+      show({ message: 'Copied to clipboard', variant: 'success' });
+    } catch {
+      show({ message: 'Could not copy to clipboard', variant: 'error' });
     }
   };
 
-  const handlePreviewDiff = (suggestion: RefactorResponse["suggestions"][number]) => {
-    // In a real app, this would open a modal or a new tab with a diff viewer
-    // eslint-disable-next-line no-console
-    console.log("Previewing diff for:", suggestion);
+  const handlePreviewDiff = async (suggestion: RefactorResponse["suggestions"][number]) => {
+    try {
+      const diffText = suggestion.diff
+        ? `Before:\n${suggestion.diff.before}\n\nAfter:\n${suggestion.diff.after}`
+        : `${suggestion.type}: ${suggestion.description}`;
+      await navigator.clipboard.writeText(diffText);
+      show({ message: 'Diff copied to clipboard', variant: 'success' });
+    } catch {
+      show({ message: 'Could not copy to clipboard', variant: 'error' });
+    }
   };
 
   const getPriorityColor = (priority: string) => {
-    switch (priority.toLowerCase()) {
+    switch ((priority ?? "").toLowerCase()) {
       case "high":
         return "text-destructive bg-destructive/10 border-destructive/20";
       case "medium":
@@ -221,7 +88,7 @@ export default function RefactorPage() {
   };
 
   const getPriorityIcon = (priority: string) => {
-    switch (priority.toLowerCase()) {
+    switch ((priority ?? "").toLowerCase()) {
       case "high":
         return <span className="text-destructive text-lg">⚠️</span>;
       case "medium":
@@ -250,25 +117,14 @@ export default function RefactorPage() {
         </div>
 
         {/* Action Button */}
-        <div className="flex justify-center gap-3">
-          <Button 
-            onClick={handleGetPlan} 
-            disabled={loading} 
+        <div className="flex justify-center">
+          <Button
+            onClick={handleGetPlan}
+            disabled={loading}
             loading={loading}
             className="btn-anim"
           >
             {loading ? "Analyzing Codebase..." : "🔧 Generate Refactor Plan"}
-          </Button>
-          <Button
-            variant="outline"
-            disabled={loading}
-            onClick={() => {
-              setUseMockData(true);
-              setResult(mockRefactorData);
-            }}
-            className="btn-anim"
-          >
-            Use Demo Data
           </Button>
         </div>
 
@@ -293,7 +149,7 @@ export default function RefactorPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 list-stagger">
                 <div className="text-center" style={{ '--i': 0 } as React.CSSProperties}>
                   <div className="text-2xl font-bold text-primary">
-                    {result.metrics.complexity.toFixed(1)}
+                    {result?.metrics?.complexity ? result.metrics.complexity.toFixed(1) : "0.0"}
                   </div>
                   <div className="text-sm text-muted-foreground">
                     Complexity
@@ -301,7 +157,7 @@ export default function RefactorPage() {
                 </div>
                 <div className="text-center" style={{ '--i': 1 } as React.CSSProperties}>
                   <div className="text-2xl font-bold text-good">
-                    {result.metrics.maintainability.toFixed(1)}
+                    {result?.metrics?.maintainability ? result.metrics.maintainability.toFixed(1) : "0.0"}
                   </div>
                   <div className="text-sm text-muted-foreground">
                     Maintainability
@@ -309,7 +165,7 @@ export default function RefactorPage() {
                 </div>
                 <div className="text-center" style={{ '--i': 2 } as React.CSSProperties}>
                   <div className="text-2xl font-bold text-highlight">
-                    {result.metrics.testability.toFixed(1)}
+                    {result?.metrics?.testability ? result.metrics.testability.toFixed(1) : "0.0"}
                   </div>
                   <div className="text-sm text-muted-foreground">
                     Testability
@@ -321,10 +177,10 @@ export default function RefactorPage() {
             {/* Refactor Suggestions */}
             <Card className="card-elevate fade-in">
               <h3 className="text-lg font-semibold text-foreground mb-4">
-                Refactor Suggestions ({result.suggestions.length})
+                Refactor Suggestions ({result?.suggestions?.length || 0})
               </h3>
               <div className="space-y-4 list-stagger">
-                {result.suggestions.map((suggestion, index) => (
+                {result?.suggestions?.map((suggestion, index) => (
                   <motion.div
                     key={`${suggestion.file}-${index}`}
                     initial={{ opacity: 0, y: 20 }}
@@ -351,13 +207,12 @@ export default function RefactorPage() {
                           </span>
                           {suggestion.riskLevel && (
                             <span
-                              className={`px-2 py-1 text-xs font-medium rounded-full border ${
-                                suggestion.riskLevel === "high" 
+                              className={`px-2 py-1 text-xs font-medium rounded-full border ${suggestion.riskLevel === "high"
                                   ? "text-destructive bg-destructive/10 border-destructive/20"
                                   : suggestion.riskLevel === "medium"
-                                  ? "text-warning bg-warning/10 border-warning/20"
-                                  : "text-good bg-good/10 border-good/20"
-                              }`}
+                                    ? "text-warning bg-warning/10 border-warning/20"
+                                    : "text-good bg-good/10 border-good/20"
+                                }`}
                             >
                               Risk: {suggestion.riskLevel.toUpperCase()}
                             </span>
@@ -369,20 +224,20 @@ export default function RefactorPage() {
                         <p className="text-sm text-foreground mb-3">
                           {suggestion.description}
                         </p>
-                        
+
                         {/* Enhanced Information */}
                         {suggestion.impact && (
                           <p className="text-sm text-muted-foreground mb-2">
                             <strong>Impact:</strong> {suggestion.impact}
                           </p>
                         )}
-                        
+
                         {suggestion.estimatedEffort && (
                           <p className="text-sm text-muted-foreground mb-2">
                             <strong>Estimated Effort:</strong> {suggestion.estimatedEffort}
                           </p>
                         )}
-                        
+
                         {/* Code Spans */}
                         {suggestion.codeSpans && suggestion.codeSpans.length > 0 && (
                           <details className="mb-3">
@@ -401,7 +256,7 @@ export default function RefactorPage() {
                             </div>
                           </details>
                         )}
-                        
+
                         {/* Diff Preview */}
                         {suggestion.diff && (
                           <details className="mb-3">
@@ -420,7 +275,7 @@ export default function RefactorPage() {
                             </div>
                           </details>
                         )}
-                        
+
                         {/* Dependencies */}
                         {suggestion.dependencies && suggestion.dependencies.length > 0 && (
                           <div className="mb-3">
@@ -436,7 +291,7 @@ export default function RefactorPage() {
                             </div>
                           </div>
                         )}
-                        
+
                         <div className="flex gap-2">
                           <Button
                             variant="outline"

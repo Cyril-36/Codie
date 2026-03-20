@@ -42,7 +42,7 @@ class SecuritySettings:
     access_token_expire_minutes: int = field(default=30)
     rate_limit_window: int = field(default=60)
     rate_limit_max_requests: int = field(default=100)
-    rate_limit_store: str = field(default="redis")
+    rate_limit_store: str = field(default="memory")
     cve_cache_ttl: int = field(default=3600)  # 1 hour
     enable_nvd_api: bool = field(default=True)
     enable_osv_api: bool = field(default=True)
@@ -81,11 +81,15 @@ class AppSettings:
     version: str = field(default="1.0.0")
     environment: str = field(default="development")
     debug: bool = field(default=False)
+    project_root: str = field(default_factory=os.getcwd)
     cors_origins: List[str] = field(
         default_factory=lambda: [
             "http://localhost:3000",
             "http://localhost:5173",
             "http://localhost:5174",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:5174",
         ]
     )
     cors_allow_credentials: bool = field(default=True)
@@ -133,7 +137,7 @@ class Settings:
                 rate_limit_max_requests=int(
                     os.getenv("RATE_LIMIT_MAX_REQUESTS", "100")
                 ),
-                rate_limit_store=os.getenv("RATE_LIMIT_STORE", "redis"),
+                rate_limit_store=os.getenv("RATE_LIMIT_STORE", "memory"),
                 cve_cache_ttl=int(os.getenv("CVE_CACHE_TTL", "3600")),
                 enable_nvd_api=os.getenv("ENABLE_NVD_API", "true").lower() == "true",
                 enable_osv_api=os.getenv("ENABLE_OSV_API", "true").lower() == "true",
@@ -162,8 +166,10 @@ class Settings:
                 debug=os.getenv("APP_DEBUG", "false").lower() == "true",
                 cors_origins=os.getenv(
                     "CORS_ORIGINS",
-                    "http://localhost:3000,http://localhost:5173,http://localhost:5174",
+                    "http://localhost:3000,http://localhost:5173,http://localhost:5174,"
+                    "http://127.0.0.1:3000,http://127.0.0.1:5173,http://127.0.0.1:5174",
                 ).split(","),
+                project_root=os.getenv("PROJECT_ROOT", os.getcwd()),
                 cors_allow_credentials=os.getenv(
                     "CORS_ALLOW_CREDENTIALS", "true"
                 ).lower()

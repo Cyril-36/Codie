@@ -49,13 +49,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/uv
-          key: uv-${{ runner.os }}-${{ hashFiles('backend/requirements.txt') }}
+          key: uv-${{ runner.os }}-${{ hashFiles('src/backend/requirements.txt') }}
           restore-keys: |
             uv-${{ runner.os }}-
 
       - name: Install backend dependencies
         run: |
-          uv pip install -r backend/requirements.txt
+          uv pip install -r src/backend/requirements.txt
 
       - name: Run pytest
         run: |
@@ -79,28 +79,28 @@ jobs:
         with:
           node-version: "20"
           cache: "pnpm"
-          cache-dependency-path: "frontend/pnpm-lock.yaml"
+          cache-dependency-path: "src/frontend/pnpm-lock.yaml"
 
       - name: Install dependencies
-        working-directory: frontend
+        working-directory: src/frontend
         run: |
           corepack enable
           pnpm install --frozen-lockfile
 
       - name: Lint
-        working-directory: frontend
+        working-directory: src/frontend
         run: |
           corepack enable
           pnpm run lint
 
       - name: Test (vitest)
-        working-directory: frontend
+        working-directory: src/frontend
         run: |
           corepack enable
           pnpm run test
 
       - name: Coverage (vitest)
-        working-directory: frontend
+        working-directory: src/frontend
         run: |
           corepack enable
           pnpm run test -- --coverage
@@ -109,14 +109,23 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage
-          path: frontend/coverage
+          path: src/frontend/coverage
+
+      - name: No mocks in services
+        run: |
+          if grep -rn "setTimeout.*resolve\|Mock response\|mock" src/frontend/src/services/ 2>/dev/null; then
+            echo "❌ Mocks found in services layer"
+            exit 1
+          else
+            echo "✅ No mocks in services"
+          fi
 
       - name: Build frontend
-        working-directory: frontend
+        working-directory: src/frontend
         run: pnpm run build
 
       - name: Check bundle size (gzipped)
-        working-directory: frontend
+        working-directory: src/frontend
         run: |
           # Find the main JS asset and check its gzipped size against a 550 KB limit
           MAIN=$(ls -1 dist/assets/*.js | head -n 1)

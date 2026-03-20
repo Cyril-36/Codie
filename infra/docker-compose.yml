@@ -49,11 +49,11 @@ services:
 
   backend:
     build:
-      context: ../codie-backend
+      context: ../src/backend
       dockerfile: Dockerfile
     container_name: codie-backend
     env_file:
-      - ../codie-backend/.env
+      - ../.env
     environment:
       DATABASE_URL: postgresql+psycopg://codie:codie@postgres:5432/codie
       REDIS_URL: redis://redis:6379/0
@@ -75,11 +75,11 @@ services:
 
   frontend:
     build:
-      context: ../codie-frontend
+      context: ../src/frontend
       dockerfile: Dockerfile
     container_name: codie-frontend
     env_file:
-      - ../codie-frontend/.env.local
+      - ../.env
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
       ENV: local

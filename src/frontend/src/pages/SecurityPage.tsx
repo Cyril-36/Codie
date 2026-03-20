@@ -9,7 +9,7 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import Select from "../components/ui/Select";
 import { useScreenReaderAnnouncement, ariaPatterns } from "../hooks/useScreenReader";
-import { scanSecurity, type SecurityRequest, type SecurityResponse } from "../services/api";
+import { scanSecurity, type SecurityRequest, type SecurityResponse } from "../services/securityApi";
 
 const languageOptions = [
   { value: "python", label: "Python" },
@@ -308,10 +308,10 @@ export default function SecurityPage() {
                               {/* Version Range Information */}
                               {vuln.version_ranges && vuln.version_ranges.length > 0 && (
                                 <div className="text-sm text-muted-foreground mb-2">
-                                  <span className="font-medium">Affected versions:</span> {vuln.version_ranges.map((range, i) => (
+                                  <span className="font-medium">Affected versions:</span> {vuln.version_ranges!.map((range, i) => (
                                     <span key={i} className="ml-1">
                                       {range.introduced} - {range.fixed}
-                                      {i < vuln.version_ranges.length - 1 ? ', ' : ''}
+                                      {i < vuln.version_ranges!.length - 1 ? ', ' : ''}
                                     </span>
                                   ))}
                                 </div>
@@ -383,7 +383,7 @@ export default function SecurityPage() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => navigator.clipboard.writeText(vuln.patch)}
+                                onClick={() => navigator.clipboard.writeText(vuln.patch || '')}
                                 className="text-xs px-2 py-1"
                                 aria-label={`Copy patch command for ${vuln.package}`}
                               >

@@ -15,5 +15,6 @@ class TimestampMixin:
 
 # Import all models so they are registered with Base.metadata
 from .analysis import Analysis  # noqa: E402
+from .user import User  # noqa: E402
 
-__all__ = ["Base", "TimestampMixin", "Analysis"]
+__all__ = ["Base", "TimestampMixin", "Analysis", "User"]

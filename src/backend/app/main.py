@@ -10,7 +10,9 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from .api.routers.chat import router as chat_ws_router
+from .api.routers.auth import router as auth_router
+from .api.routers.chat import router as chat_router
+from .api.routers.chat import ws_router as chat_ws_router
 from .api.routers.code_review import router as review_router
 from .api.routers.export import router as export_router
 from .api.routers.graph import router as graph_router
@@ -151,9 +153,11 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    # Add middleware in order (last added = first executed)
+    # Add middleware in order (last added = first executed for incoming requests)
+    # CORS must be added LAST so it executes FIRST — before any BaseHTTPMiddleware
+    # subclass can interfere with preflight OPTIONS handling.
 
-    # 1. Error handling (outermost)
+    # 1. Error handling (innermost — wraps routes)
     app.add_middleware(ErrorHandlingMiddleware)
 
     # 2. Request logging
@@ -162,20 +166,10 @@ def create_app() -> FastAPI:
     # 3. Gzip compression
     app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-    # 4. CORS
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=settings.app.cors_origins,
-        allow_credentials=settings.app.cors_allow_credentials,
-        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allow_headers=["Authorization", "Content-Type", "X-API-Key", "X-Request-ID"],
-        expose_headers=["X-Request-ID", "X-RateLimit-Limit", "X-RateLimit-Remaining"],
-    )
-
-    # 5. Security headers
+    # 4. Security headers
     app.add_middleware(SecurityHeadersMiddleware)
 
-    # 6. Rate limiting
+    # 5. Rate limiting
     app.add_middleware(
         RateLimitMiddleware,
         config=RateLimitConfig(
@@ -184,6 +178,17 @@ def create_app() -> FastAPI:
             store=settings.security.rate_limit_store,
             redis_url=settings.redis.url,
         ),
+    )
+
+    # 6. CORS — added last so it runs first (outermost), intercepting all preflight
+    # OPTIONS requests before any other middleware can touch them.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.app.cors_origins,
+        allow_credentials=settings.app.cors_allow_credentials,
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["*"],
+        expose_headers=["X-Request-ID", "X-RateLimit-Limit", "X-RateLimit-Remaining"],
     )
 
     # 7. Metrics middleware
@@ -235,9 +240,8 @@ def create_app() -> FastAPI:
             ai_status = ai_manager.get_provider_status()
 
             # Overall health
-            overall_healthy = db_health["status"] == "healthy" and any(
-                provider["enabled"] for provider in ai_status.values()
-            )
+            # AI providers are optional — only DB health determines overall health
+            overall_healthy = db_health["status"] == "healthy"
 
             return {
                 "status": "healthy" if overall_healthy else "unhealthy",
@@ -278,12 +282,14 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=500, detail="Failed to generate metrics")
 
     # Include all routers
+    app.include_router(auth_router, prefix="/api/v1")
     app.include_router(health_router, prefix="/api/v1")
     app.include_router(analysis_router, prefix="/api/v1")
     app.include_router(review_router, prefix="/api/v1")
     app.include_router(export_router, prefix="/api/v1")
     app.include_router(graph_router, prefix="/api/v1")
     app.include_router(perf_router, prefix="/api/v1")
+    app.include_router(chat_router, prefix="/api/v1")
     app.include_router(chat_ws_router, prefix="/api/v1")
     app.include_router(style_router, prefix="/api/v1")
     app.include_router(testgen_router, prefix="/api/v1")

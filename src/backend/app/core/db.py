@@ -76,6 +76,13 @@ class DatabaseManager:
             # Verify connection
             await self._verify_connection()
 
+            # Auto-create tables for SQLite dev (Alembic is canonical for production)
+            if database_url.startswith("sqlite"):
+                from ..models import Base
+                async with self.engine.begin() as conn:
+                    await conn.run_sync(Base.metadata.create_all)
+                logger.info("SQLite tables created/verified")
+
             self._initialized = True
             logger.info("Database initialized successfully")
 

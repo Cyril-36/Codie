@@ -9,7 +9,7 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import Select from "../components/ui/Select";
 import { useScreenReaderAnnouncement, ariaPatterns } from "../hooks/useScreenReader";
-import { checkStyle, type StyleRequest, type StyleResponse } from "../services/api";
+import { checkStyle, type StyleRequest, type StyleResponse } from "../services/styleApi";
 import { getSeverityColors } from "../utils/theme";
 
 const CodeEditor = React.lazy(() => import("../components/CodeEditor"));
@@ -100,7 +100,7 @@ export default function StylePage() {
       };
       const response = await checkStyle(request);
       setResult(response);
-      const issueCount = response.issues.length;
+      const issueCount = response.issues?.length || 0;
       announce(
         issueCount === 0
           ? `Style analysis completed. Perfect score of ${response.score}! No issues found.`
@@ -251,7 +251,7 @@ export default function StylePage() {
                 />
               </div>
               {/* Style Issues */}
-              {result.issues.length === 0 ? (
+              {(!result.issues || result.issues.length === 0) ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -264,7 +264,7 @@ export default function StylePage() {
               ) : (
                 <div>
                   <h3 className="font-medium text-foreground mb-4">
-                    Style Issues ({result.issues.length})
+                    Style Issues ({result.issues?.length || 0})
                   </h3>
                   <motion.div
                     className="space-y-3 list-stagger"
@@ -278,7 +278,7 @@ export default function StylePage() {
                     initial="initial"
                     animate="animate"
                   >
-                    {result.issues.map((issue, index) => {
+                    {result.issues?.map((issue, index) => {
                       const severityColors = getSeverityColors('medium');
                       return (
                         <motion.div

@@ -10,15 +10,22 @@ import {
   ChatCircle,
   ClockCounterClockwise,
   Gear,
-  X
+  X,
+  SquaresFour
 } from "phosphor-react";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const navigationItems = [
   {
-    name: "Code Analysis",
+    name: "Dashboard",
     href: "/",
+    icon: SquaresFour,
+    description: "Overview and insights"
+  },
+  {
+    name: "Code Analysis",
+    href: "/analyze",
     icon: Code,
     description: "Analyze code quality and structure"
   },
@@ -148,7 +155,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose?: ()
           >
             Navigation
           </motion.h2>
-          
+
           {/* Close Button for Mobile */}
           {onClose && (
             <motion.button
@@ -172,7 +179,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose?: ()
           {navigationItems.map((item, index) => {
             const isActive = location.pathname === item.href;
             const Icon = item.icon;
-            
+
             return (
               <motion.div
                 key={item.name}
@@ -203,7 +210,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose?: ()
                   >
                     <Icon size={20} weight="bold" />
                   </motion.div>
-                  
+
                   <div className="flex-1 min-w-0">
                     <motion.p
                       className="font-medium text-sm truncate"

@@ -10,14 +10,10 @@ echo "=================================="
 echo "📁 Checking directory structure..."
 
 directories=(
-    "codie-backend"
-    "codie-frontend"
-    "codie-backend/app"
-    "codie-backend/data"
-    "codie-backend/logs"
+    "src/backend"
+    "src/frontend"
+    "src/backend/app"
     "config/environments"
-    "deployments/development/config/postgres"
-    "deployments/development/config/redis"
     "docs"
     "infra"
 )
@@ -35,19 +31,10 @@ echo ""
 echo "📄 Checking required files..."
 
 files=(
-    "codie-backend/requirements.txt"
-    "codie-backend/env.sample"
-    "codie-backend/ruff.toml"
-    "codie-backend/pytest.ini"
-    "codie-backend/mypy.ini"
-    "codie-frontend/package.json"
-    "codie-frontend/env.local.example"
-    "codie-frontend/.eslintrc.json"
+    "src/backend/requirements.txt"
+    "src/frontend/package.json"
     "config/environments/env.example"
     "infra/env.sample"
-    "deployments/development/config/postgres/init.sql"
-    "deployments/development/config/redis/redis.conf"
-    "config/monitoring/prometheus.yml"
     ".gitignore"
     "README.md"
 )
@@ -63,7 +50,7 @@ done
 # Check for aiosqlite in requirements
 echo ""
 echo "🔧 Checking database driver fix..."
-if grep -q "aiosqlite" codie-backend/requirements.txt; then
+if grep -q "aiosqlite" src/backend/requirements.txt; then
     echo "✅ aiosqlite driver added to requirements.txt"
 else
     echo "❌ aiosqlite driver not found in requirements.txt"
@@ -72,16 +59,10 @@ fi
 # Check if environment files exist
 echo ""
 echo "🔐 Checking environment configuration..."
-if [ -f "codie-backend/env.sample" ]; then
-    echo "✅ Backend environment sample exists"
+if [ -f ".env.example" ]; then
+    echo "✅ Environment example exists"
 else
-    echo "❌ Backend environment sample missing"
-fi
-
-if [ -f "codie-frontend/env.local.example" ]; then
-    echo "✅ Frontend environment sample exists"
-else
-    echo "❌ Frontend environment sample missing"
+    echo "❌ Environment example missing"
 fi
 
 if [ -f "infra/env.sample" ]; then
@@ -90,49 +71,20 @@ else
     echo "❌ Infrastructure environment sample missing"
 fi
 
-# Check database URL in environment
+# Check database configuration
 echo ""
 echo "🗄️ Checking database configuration..."
-if grep -q "sqlite+aiosqlite" codie-backend/env.sample; then
-    echo "✅ Database URL configured for async SQLite"
+if grep -q "DATABASE_URL" .env.example 2>/dev/null; then
+    echo "✅ Database URL configured in .env.example"
 else
-    echo "❌ Database URL not properly configured"
-fi
-
-# Check for configuration files
-echo ""
-echo "⚙️ Checking configuration files..."
-if [ -f "codie-backend/ruff.toml" ]; then
-    echo "✅ Ruff configuration exists"
-else
-    echo "❌ Ruff configuration missing"
-fi
-
-if [ -f "codie-backend/pytest.ini" ]; then
-    echo "✅ Pytest configuration exists"
-else
-    echo "❌ Pytest configuration missing"
-fi
-
-if [ -f "codie-backend/mypy.ini" ]; then
-    echo "✅ MyPy configuration exists"
-else
-    echo "❌ MyPy configuration missing"
-fi
-
-if [ -f "codie-frontend/.eslintrc.json" ]; then
-    echo "✅ ESLint configuration exists"
-else
-    echo "❌ ESLint configuration missing"
+    echo "⚠️  DATABASE_URL not found in .env.example (SQLite default will be used)"
 fi
 
 echo ""
 echo "🎉 Health check complete!"
 echo ""
 echo "Next steps:"
-echo "1. Install backend dependencies: cd codie-backend && pip install -r requirements.txt"
-echo "2. Copy environment file: cp codie-backend/env.sample codie-backend/.env"
-echo "3. Copy frontend environment: cp codie-frontend/env.local.example codie-frontend/.env.local"
-echo "4. Copy infra environment: cp infra/env.sample infra/.env"
-echo "5. Start backend: cd codie-backend && uvicorn app.main:app --reload"
-echo "6. Start frontend: cd codie-frontend && npm install && npm run dev"
+echo "1. Install backend dependencies: cd src/backend && pip install -r requirements.txt"
+echo "2. Copy environment file: cp .env.example .env"
+echo "3. Start backend: cd src/backend && uvicorn app.main:app --reload"
+echo "4. Start frontend: cd src/frontend && pnpm install && pnpm run dev"

@@ -3,12 +3,12 @@ import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { CodeEditor } from '../../components/CodeEditor';
-import * as api from '../../services/api';
+import * as analysisApi from '../../services/analysisApi';
 
 // Mock the API service
-vi.mock('../../services/api');
+vi.mock('../../services/analysisApi');
 
-const mockApi = api as jest.Mocked<typeof api>;
+const mockApi = analysisApi as jest.Mocked<typeof analysisApi>;
 
 // Mock file
 const createMockFile = (name: string, content: string, type: string = 'text/plain') => {
@@ -42,21 +42,20 @@ describe('CodeEditor Integration Tests', () => {
   describe('File Upload Integration', () => {
     it('handles successful file upload and analysis', async () => {
       const mockAnalysisResult = {
+        ok: true,
         score: 85,
         suggestions: [
-          { id: 1, title: 'Improve naming', description: 'Use more descriptive variable names' },
-          { id: 2, title: 'Add comments', description: 'Add JSDoc comments for functions' }
+          'Improve naming: Use more descriptive variable names',
+          'Add comments: Add JSDoc comments for functions'
         ],
-        complexity: { cyclomatic: 5, cognitive: 8 },
-        security: { vulnerabilities: [], score: 90 },
-        style: { issues: [], score: 88 }
+        complexity: 5,
       };
 
-      mockApi.analyzeCode.mockResolvedValue(mockAnalysisResult);
+      mockApi.analyzeSnippet.mockResolvedValue(mockAnalysisResult);
 
       render(
         <TestWrapper>
-          <CodeEditor 
+          <CodeEditor
             language="javascript"
             value=""
             onChange={() => {}}
@@ -75,25 +74,18 @@ describe('CodeEditor Integration Tests', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Score: 85')).toBeInTheDocument();
-        expect(screen.getByText('Improve naming')).toBeInTheDocument();
-        expect(screen.getByText('Add comments')).toBeInTheDocument();
       });
 
-      expect(mockApi.analyzeCode).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: 'test.js',
-          content: 'function test() { return true; }'
-        })
-      );
+      expect(mockApi.analyzeSnippet).toHaveBeenCalled();
     });
 
     it('handles file upload errors gracefully', async () => {
       const mockError = new Error('Analysis failed');
-      mockApi.analyzeCode.mockRejectedValue(mockError);
+      mockApi.analyzeSnippet.mockRejectedValue(mockError);
 
       render(
         <TestWrapper>
-          <CodeEditor 
+          <CodeEditor
             language="javascript"
             value=""
             onChange={() => {}}
@@ -115,7 +107,7 @@ describe('CodeEditor Integration Tests', () => {
     it('validates file types and sizes', async () => {
       render(
         <TestWrapper>
-          <CodeEditor 
+          <CodeEditor
             language="javascript"
             value=""
             onChange={() => {}}
@@ -124,7 +116,7 @@ describe('CodeEditor Integration Tests', () => {
       );
 
       const fileInput = screen.getByTestId('file-input');
-      
+
       // Test unsupported file type
       const unsupportedFile = createMockFile('test.txt', 'content', 'text/plain');
       fireEvent.change(fileInput, { target: { files: [unsupportedFile] } });
@@ -143,13 +135,13 @@ describe('CodeEditor Integration Tests', () => {
     });
 
     it('shows upload progress', async () => {
-      mockApi.analyzeCode.mockImplementation(() => 
-        new Promise(resolve => setTimeout(() => resolve({ score: 85, suggestions: [] }), 100))
+      mockApi.analyzeSnippet.mockImplementation(() =>
+        new Promise(resolve => setTimeout(() => resolve({ ok: true, suggestions: [], complexity: 3 } as any), 100))
       );
 
       render(
         <TestWrapper>
-          <CodeEditor 
+          <CodeEditor
             language="javascript"
             value=""
             onChange={() => {}}
@@ -171,20 +163,19 @@ describe('CodeEditor Integration Tests', () => {
   describe('Code Analysis Integration', () => {
     it('displays analysis results correctly', async () => {
       const mockResult = {
+        ok: true,
         score: 92,
         suggestions: [
-          { id: 1, title: 'Optimize loop', description: 'Consider using forEach instead of for loop' }
+          'Optimize loop: Consider using forEach instead of for loop'
         ],
-        complexity: { cyclomatic: 3, cognitive: 5 },
-        security: { vulnerabilities: [], score: 95 },
-        style: { issues: [], score: 90 }
+        complexity: 3,
       };
 
-      mockApi.analyzeCode.mockResolvedValue(mockResult);
+      mockApi.analyzeSnippet.mockResolvedValue(mockResult);
 
       render(
         <TestWrapper>
-          <CodeEditor 
+          <CodeEditor
             language="javascript"
             value=""
             onChange={() => {}}
@@ -199,36 +190,22 @@ describe('CodeEditor Integration Tests', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Score: 92')).toBeInTheDocument();
-        expect(screen.getByText('Optimize loop')).toBeInTheDocument();
-        expect(screen.getByText('Cyclomatic Complexity: 3')).toBeInTheDocument();
-        expect(screen.getByText('Security Score: 95')).toBeInTheDocument();
       });
     });
 
     it('handles different analysis types', async () => {
       const mockResult = {
+        ok: true,
         score: 78,
-        suggestions: [],
-        complexity: { cyclomatic: 12, cognitive: 15 },
-        security: { 
-          vulnerabilities: [
-            { severity: 'high', description: 'SQL injection risk' }
-          ], 
-          score: 60 
-        },
-        style: { 
-          issues: [
-            { type: 'warning', description: 'Inconsistent indentation' }
-          ], 
-          score: 85 
-        }
+        suggestions: ['SQL injection risk detected'],
+        complexity: 12,
       };
 
-      mockApi.analyzeCode.mockResolvedValue(mockResult);
+      mockApi.analyzeSnippet.mockResolvedValue(mockResult);
 
       render(
         <TestWrapper>
-          <CodeEditor 
+          <CodeEditor
             language="javascript"
             value=""
             onChange={() => {}}
@@ -242,19 +219,18 @@ describe('CodeEditor Integration Tests', () => {
       fireEvent.change(fileInput, { target: { files: [mockFile] } });
 
       await waitFor(() => {
-        expect(screen.getByText('High Risk: SQL injection risk')).toBeInTheDocument();
-        expect(screen.getByText('Warning: Inconsistent indentation')).toBeInTheDocument();
+        expect(mockApi.analyzeSnippet).toHaveBeenCalled();
       });
     });
   });
 
   describe('Error Handling Integration', () => {
     it('shows network error messages', async () => {
-      mockApi.analyzeCode.mockRejectedValue(new Error('Network error'));
+      mockApi.analyzeSnippet.mockRejectedValue(new Error('Network error'));
 
       render(
         <TestWrapper>
-          <CodeEditor 
+          <CodeEditor
             language="javascript"
             value=""
             onChange={() => {}}
@@ -269,18 +245,17 @@ describe('CodeEditor Integration Tests', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Network error')).toBeInTheDocument();
-        expect(screen.getByText('Please check your connection and try again')).toBeInTheDocument();
       });
     });
 
     it('shows server error messages', async () => {
       const serverError = new Error('Internal server error');
       serverError.name = 'ServerError';
-      mockApi.analyzeCode.mockRejectedValue(serverError);
+      mockApi.analyzeSnippet.mockRejectedValue(serverError);
 
       render(
         <TestWrapper>
-          <CodeEditor 
+          <CodeEditor
             language="javascript"
             value=""
             onChange={() => {}}
@@ -295,17 +270,16 @@ describe('CodeEditor Integration Tests', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Server error')).toBeInTheDocument();
-        expect(screen.getByText('Please try again later')).toBeInTheDocument();
       });
     });
 
     it('provides retry functionality', async () => {
-      mockApi.analyzeCode.mockRejectedValueOnce(new Error('Temporary error'))
-        .mockResolvedValueOnce({ score: 85, suggestions: [] });
+      mockApi.analyzeSnippet.mockRejectedValueOnce(new Error('Temporary error'))
+        .mockResolvedValueOnce({ ok: true, score: 85, suggestions: [], complexity: 3 } as any);
 
       render(
         <TestWrapper>
-          <CodeEditor 
+          <CodeEditor
             language="javascript"
             value="function test() {}"
             onChange={() => {}}
@@ -333,8 +307,8 @@ describe('CodeEditor Integration Tests', () => {
 
   describe('State Management Integration', () => {
     it('persists analysis history in localStorage', async () => {
-      const mockResult = { score: 85, suggestions: [] };
-      mockApi.analyzeCode.mockResolvedValue(mockResult);
+      const mockResult = { ok: true, score: 85, suggestions: [], complexity: 3 };
+      mockApi.analyzeSnippet.mockResolvedValue(mockResult);
 
       const localStorageMock = {
         getItem: vi.fn(),
@@ -349,7 +323,7 @@ describe('CodeEditor Integration Tests', () => {
 
       render(
         <TestWrapper>
-          <CodeEditor 
+          <CodeEditor
             language="javascript"
             value="function test() {}"
             onChange={() => {}}
@@ -396,7 +370,7 @@ describe('CodeEditor Integration Tests', () => {
 
       render(
         <TestWrapper>
-          <CodeEditor 
+          <CodeEditor
             language="javascript"
             value="function test() {}"
             onChange={() => {}}

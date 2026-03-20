@@ -1,24 +1,26 @@
-import { 
-  Robot, 
-  Lightning, 
-  TrendUp, 
-  GitPullRequest, 
-  Package, 
-  Activity, 
-  GitBranch, 
-  ChartLine, 
-  Warning, 
-  TestTube, 
-  Wrench, 
-  Shield, 
+import {
+  Robot,
+  Lightning,
+  TrendUp,
+  GitPullRequest,
+  Package,
+  Activity,
+  GitBranch,
+  ChartLine,
+  Warning,
+  TestTube,
+  Wrench,
+  Shield,
   Sliders,
   ArrowSquareOut,
   CheckCircle
 } from "phosphor-react";
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 import { useToasts } from "../components/ui/ToastProvider";
+import { getHistoryStats, fetchHistory } from "../services/historyApi";
 
 interface FeatureCard {
   id: string;
@@ -34,9 +36,19 @@ interface FeatureCard {
 export default function EnhancedHome() {
   const [activeCard, setActiveCard] = useState<string | null>(null);
   const [progressValues, setProgressValues] = useState<Record<string, number>>({});
-  const [isQuickAnalysisLoading, setIsQuickAnalysisLoading] = useState(false);
   const navigate = useNavigate();
-  const { show } = useToasts();
+  const { show: _show } = useToasts();
+
+  // Fetch real stats from backend
+  const { data: stats } = useQuery({
+    queryKey: ['history-stats'],
+    queryFn: getHistoryStats,
+  });
+
+  const { data: recentHistory } = useQuery({
+    queryKey: ['history', 1, 5],
+    queryFn: () => fetchHistory(1, 5),
+  });
 
   // Handle AI Assistant button click
   const handleAIAssistant = () => {
@@ -44,44 +56,8 @@ export default function EnhancedHome() {
   };
 
   // Handle Quick Analysis button click
-  const handleQuickAnalysis = async () => {
-    setIsQuickAnalysisLoading(true);
-    
-    try {
-      // Show starting toast
-      show({
-        variant: 'info',
-        title: 'Quick Analysis Started',
-        message: 'Analyzing your codebase for quick insights...',
-        durationMs: 2000
-      });
-      
-      // Simulate a quick analysis process
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Show success toast
-      show({
-        variant: 'success',
-        title: 'Quick Analysis Complete',
-        message: 'Redirecting to detailed analysis page...',
-        durationMs: 3000
-      });
-      
-      // Navigate to the main analysis page with a success state
-      navigate('/', { state: { quickAnalysis: true } });
-    } catch (error) {
-      console.error('Quick analysis failed:', error);
-      
-      // Show error toast
-      show({
-        variant: 'error',
-        title: 'Quick Analysis Failed',
-        message: 'Something went wrong. Please try again.',
-        durationMs: 5000
-      });
-    } finally {
-      setIsQuickAnalysisLoading(false);
-    }
+  const handleQuickAnalysis = () => {
+    navigate('/analyze');
   };
 
   const featureCards = useMemo<FeatureCard[]>(() => [
@@ -91,7 +67,7 @@ export default function EnhancedHome() {
       title: 'Dependency Graph',
       description: 'Visualize package dependencies and impact analysis',
       status: 'Live',
-      metrics: ['4 impacted packages', '2 critical edges'],
+      metrics: ['Visualize package links', 'Track coupling issues'],
       color: 'from-blue-500 to-cyan-500',
       href: '/graph'
     },
@@ -101,7 +77,7 @@ export default function EnhancedHome() {
       title: 'Performance Charts',
       description: 'Monitor code performance and velocity metrics',
       status: 'Active',
-      metrics: ['Velocity +12%', 'Lines changed stable'],
+      metrics: ['Track code velocity', 'Monitor line changes'],
       color: 'from-green-500 to-emerald-500',
       href: '/performance'
     },
@@ -111,7 +87,7 @@ export default function EnhancedHome() {
       title: 'Alerts & Issues',
       description: 'Track security alerts and code quality issues',
       status: 'Warning',
-      metrics: ['5 open (1 high)', '2 critical'],
+      metrics: ['Track security issues', 'Monitor code quality'],
       color: 'from-orange-500 to-red-500',
       href: '/security'
     },
@@ -121,7 +97,7 @@ export default function EnhancedHome() {
       title: 'Test Generator',
       description: 'AI-powered test generation and coverage analysis',
       status: 'Ready',
-      metrics: ['Confidence 82%', '3 new tests'],
+      metrics: ['AI-generated tests', 'Coverage analysis'],
       color: 'from-purple-500 to-pink-500',
       href: '/test-gen'
     },
@@ -131,7 +107,7 @@ export default function EnhancedHome() {
       title: 'Refactor Planner',
       description: 'Intelligent refactoring suggestions and planning',
       status: 'Queued',
-      metrics: ['3 candidates', 'Priority: Medium'],
+      metrics: ['Find refactor targets', 'Prioritized suggestions'],
       color: 'from-indigo-500 to-blue-500',
       href: '/refactor'
     },
@@ -141,7 +117,7 @@ export default function EnhancedHome() {
       title: 'Security Panel',
       description: 'Vulnerability scanning and security recommendations',
       status: 'Secure',
-      metrics: ['1 CVE patch ready', 'Score: 94/100'],
+      metrics: ['CVE scanning', 'Dependency security'],
       color: 'from-emerald-500 to-teal-500',
       href: '/security'
     },
@@ -151,9 +127,9 @@ export default function EnhancedHome() {
       title: 'Noise Filter / Export',
       description: 'Smart filtering and report generation',
       status: 'Configured',
-      metrics: ['Threshold 30%', '2 exports today'],
+      metrics: ['Smart filtering', 'Export reports'],
       color: 'from-slate-500 to-gray-500',
-      href: '/export'
+      href: '/history'
     },
     {
       id: 'ai-chat',
@@ -161,30 +137,21 @@ export default function EnhancedHome() {
       title: 'AI Chat',
       description: 'Intelligent code analysis and recommendations',
       status: 'Online',
-      metrics: ['Ready', 'Typing indicators'],
+      metrics: ['AI code assistant', 'Instant help'],
       color: 'from-violet-500 to-purple-500',
       href: '/chat'
     }
   ], []);
 
-  // Animate progress bars on mount
+  // Animate progress bars based on real stats
   useEffect(() => {
+    const total = stats?.total_analyses ?? 0;
+    const pct = total > 0 ? Math.min(100, Math.round(total * 2)) : 0;
     const timer = setTimeout(() => {
-      const initialValues: Record<string, number> = {};
-      featureCards.forEach(card => {
-        if (card.id === 'test-gen') {
-          initialValues[card.id] = 82;
-        } else if (card.id === 'performance') {
-          initialValues[card.id] = 67;
-        } else if (card.id === 'security') {
-          initialValues[card.id] = 94;
-        }
-      });
-      setProgressValues(initialValues);
+      setProgressValues({ 'test-gen': pct, 'performance': pct, 'security': pct });
     }, 500);
-
     return () => clearTimeout(timer);
-  }, [featureCards]);
+  }, [stats]);
 
   const handleCardClick = (card: FeatureCard) => {
     setActiveCard(card.id);
@@ -225,7 +192,7 @@ export default function EnhancedHome() {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <button 
+            <button
               className="btn btn-outline btn-sm btn-anim px-5 py-2.5 min-h-[44px] flex items-center justify-center"
               onClick={handleAIAssistant}
               aria-label="Open AI Chat Assistant"
@@ -235,25 +202,15 @@ export default function EnhancedHome() {
               <Robot className="w-4 h-4 mr-2 flex-shrink-0" />
               <span className="font-medium">AI Assistant</span>
             </button>
-            <button 
+            <button
               className="btn btn-primary btn-sm btn-anim px-5 py-2.5 min-h-[44px] flex items-center justify-center"
               onClick={handleQuickAnalysis}
-              disabled={isQuickAnalysisLoading}
               aria-label="Perform Quick Code Analysis"
               role="button"
               tabIndex={0}
             >
-              {isQuickAnalysisLoading ? (
-                <svg className="animate-spin h-4 w-4 text-white mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              ) : (
-                <Lightning className="w-4 h-4 mr-2 flex-shrink-0" />
-              )}
-              <span className="font-medium">
-                {isQuickAnalysisLoading ? 'Analyzing...' : 'Quick Analysis'}
-              </span>
+              <Lightning className="w-4 h-4 mr-2 flex-shrink-0" />
+              <span className="font-medium">Quick Analysis</span>
             </button>
           </div>
         </div>
@@ -267,8 +224,8 @@ export default function EnhancedHome() {
               <TrendUp className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-[color:var(--muted-foreground)]">Velocity</p>
-              <p className="text-xl font-bold text-[color:var(--foreground)]">+12%</p>
+              <p className="text-sm text-[color:var(--muted-foreground)]">Analyses</p>
+              <p className="text-xl font-bold text-[color:var(--foreground)]">{stats?.total_analyses ?? 0}</p>
             </div>
           </div>
         </div>
@@ -279,8 +236,8 @@ export default function EnhancedHome() {
               <GitPullRequest className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-[color:var(--muted-foreground)]">Pull Requests</p>
-              <p className="text-xl font-bold text-[color:var(--foreground)]">24</p>
+              <p className="text-sm text-[color:var(--muted-foreground)]">Languages</p>
+              <p className="text-xl font-bold text-[color:var(--foreground)]">{stats ? Object.keys(stats.languages).length : 0}</p>
             </div>
           </div>
         </div>
@@ -291,8 +248,8 @@ export default function EnhancedHome() {
               <Package className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-[color:var(--muted-foreground)]">Dependencies</p>
-              <p className="text-xl font-bold text-[color:var(--foreground)]">156</p>
+              <p className="text-sm text-[color:var(--muted-foreground)]">Avg Complexity</p>
+              <p className="text-xl font-bold text-[color:var(--foreground)]">{stats?.average_complexity?.toFixed(1) ?? '—'}</p>
             </div>
           </div>
         </div>
@@ -303,8 +260,8 @@ export default function EnhancedHome() {
               <Activity className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-sm text-[color:var(--muted-foreground)]">Issues</p>
-              <p className="text-xl font-bold text-[color:var(--foreground)]">8</p>
+              <p className="text-sm text-[color:var(--muted-foreground)]">Types</p>
+              <p className="text-xl font-bold text-[color:var(--foreground)]">{stats ? Object.keys(stats.analysis_types).length : 0}</p>
             </div>
           </div>
         </div>
@@ -320,9 +277,8 @@ export default function EnhancedHome() {
           return (
             <div
               key={card.id}
-              className={`card card-elevate p-6 tile group block cursor-pointer transition-all duration-300 ${
-                isActive ? 'scale-105 ring-2 ring-[color:var(--primary)]' : ''
-              }`}
+              className={`card card-elevate p-6 tile group block cursor-pointer transition-all duration-300 ${isActive ? 'scale-105 ring-2 ring-[color:var(--primary)]' : ''
+                }`}
               style={{ '--i': index } as React.CSSProperties}
               onClick={() => handleCardClick(card)}
               onKeyDown={(e) => e.key === 'Enter' && handleCardClick(card)}
@@ -349,9 +305,8 @@ export default function EnhancedHome() {
                   aria-label={`Open ${card.title}`}
                   onClick={(e) => { e.stopPropagation(); navigate(card.href); }}
                 >
-                  <ArrowSquareOut className={`w-4 h-4 opacity-70 transition-all duration-200 ${
-                    isActive ? 'translate-x-1 translate-y-[-1px]' : 'group-hover:translate-x-1'
-                  }`} />
+                  <ArrowSquareOut className={`w-4 h-4 opacity-70 transition-all duration-200 ${isActive ? 'translate-x-1 translate-y-[-1px]' : 'group-hover:translate-x-1'
+                    }`} />
                 </button>
               </div>
 
@@ -369,7 +324,7 @@ export default function EnhancedHome() {
                         <CheckCircle className="w-8 h-8 text-white" />
                       </div>
                       <div className="w-24 h-2 bg-[color:var(--muted)] rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-1000 ease-out"
                           style={{ width: `${progressValue}%` }}
                         />
@@ -378,7 +333,7 @@ export default function EnhancedHome() {
                     </div>
                   </div>
                 )}
-                
+
                 {card.id === 'performance' && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
@@ -386,7 +341,7 @@ export default function EnhancedHome() {
                         <Lightning className="w-8 h-8 text-white" />
                       </div>
                       <div className="w-24 h-2 bg-[color:var(--muted)] rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className="h-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-1000 ease-out"
                           style={{ width: `${progressValue}%` }}
                         />
@@ -403,7 +358,7 @@ export default function EnhancedHome() {
                         <Shield className="w-8 h-8 text-white" />
                       </div>
                       <div className="w-24 h-2 bg-[color:var(--muted)] rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-1000 ease-out"
                           style={{ width: `${progressValue}%` }}
                         />
@@ -435,7 +390,7 @@ export default function EnhancedHome() {
       <section className="card p-6 reveal">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold">Recent Activity</h2>
-          <button 
+          <button
             className="text-sm text-[color:var(--primary)] hover:underline hover:text-[color:var(--primary)]/80 transition-all duration-200 font-medium px-3 py-1.5 rounded-md hover:bg-[color:var(--primary)]/10 focus:outline-none focus:ring-2 focus:ring-[color:var(--primary)]/20 focus:ring-offset-2"
             onClick={() => navigate('/history')}
             aria-label="View all activity history"
@@ -445,27 +400,26 @@ export default function EnhancedHome() {
             View all
           </button>
         </div>
-        
+
         <div className="space-y-4">
-          {[
-            { action: 'Security scan completed', time: '2 minutes ago', status: 'success' },
-            { action: 'New test generated for login flow', time: '15 minutes ago', status: 'info' },
-            { action: 'Dependency update: lodash@4.17.21', time: '1 hour ago', status: 'warning' },
-            { action: 'Performance analysis finished', time: '2 hours ago', status: 'success' },
-            { action: 'Refactor suggestion created', time: '3 hours ago', status: 'info' }
-          ].map((activity, index) => (
-            <div key={index} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[color:var(--muted)] transition-colors">
-              <div className={`w-2 h-2 rounded-full ${
-                activity.status === 'success' ? 'bg-green-500' :
-                activity.status === 'warning' ? 'bg-orange-500' :
-                'bg-blue-500'
-              }`} />
+          {recentHistory?.items.length ? recentHistory.items.map((item) => (
+            <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[color:var(--muted)] transition-colors">
+              <div className="w-2 h-2 rounded-full bg-green-500" />
               <div className="flex-1">
-                <p className="text-sm font-medium">{activity.action}</p>
-                <p className="text-xs text-[color:var(--muted-foreground)]">{activity.time}</p>
+                <p className="text-sm font-medium">
+                  {item.analysis_type || 'code_review'} analysis — {item.language}
+                  {item.complexity ? ` (complexity: ${item.complexity.toFixed(1)})` : ''}
+                </p>
+                <p className="text-xs text-[color:var(--muted-foreground)]">
+                  {new Date(item.created_at).toLocaleString()}
+                </p>
               </div>
             </div>
-          ))}
+          )) : (
+            <div className="text-center py-4 text-[color:var(--muted-foreground)]">
+              <p className="text-sm">No recent activity. Run your first analysis!</p>
+            </div>
+          )}
         </div>
       </section>
     </div>

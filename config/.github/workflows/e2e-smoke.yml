@@ -18,10 +18,10 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build backend image
-        run: docker build -t codie-backend:smoke -f backend/Dockerfile .
+        run: docker build -t codie-backend:smoke -f src/backend/Dockerfile .
 
       - name: Build frontend image
-        run: docker build -t codie-frontend:smoke -f frontend/Dockerfile .
+        run: docker build -t codie-frontend:smoke -f src/frontend/Dockerfile .
 
       - name: Run backend
         run: docker run -d --name codie-backend -p 8000:8000 codie-backend:smoke
@@ -81,7 +81,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build backend image
-        run: docker build -t codie-backend:smoke -f backend/Dockerfile .
+        run: docker build -t codie-backend:smoke -f src/backend/Dockerfile .
 
       - name: Run backend
         run: docker run -d --name codie-backend -p 8000:8000 codie-backend:smoke

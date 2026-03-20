@@ -482,9 +482,27 @@ class CVEDatabase:
         return "Check latest version"
 
     def _extract_osv_severity(self, vuln: Dict[str, Any]) -> str:
-        """Extract severity from OSV"""
-        # OSV doesn't always have severity, so we'll estimate based on CVSS if available
-        return "medium"  # Default
+        """Extract severity from OSV data (CVSS score if available)."""
+        try:
+            severities = vuln.get("severity", [])
+            if severities and isinstance(severities, list):
+                score_str = str(severities[0].get("score", ""))
+                if score_str:
+                    score = float(score_str)
+                    if score >= 9.0:
+                        return "critical"
+                    if score >= 7.0:
+                        return "high"
+                    if score >= 4.0:
+                        return "medium"
+                    return "low"
+            db_specific = vuln.get("database_specific", {})
+            sev = str(db_specific.get("severity", "")).lower()
+            if sev in ("critical", "high", "medium", "low"):
+                return sev
+        except (ValueError, TypeError, KeyError):
+            pass
+        return "medium"
 
     def _extract_ghsa_fixed_versions(self, advisory: Dict[str, Any]) -> str:
         """Extract fixed versions from GHSA"""
@@ -492,9 +510,26 @@ class CVEDatabase:
         return "Check latest version"
 
     def _extract_ghsa_severity(self, advisory: Dict[str, Any]) -> str:
-        """Extract severity from GHSA"""
-        # GHSA doesn't always have severity, so we'll estimate based on CVSS if available
-        return "medium"  # Default
+        """Extract severity from GHSA data."""
+        try:
+            sev = str(advisory.get("severity", "")).lower()
+            if sev in ("critical", "high", "medium", "low"):
+                return sev
+            if sev == "moderate":
+                return "medium"
+            cvss = advisory.get("cvss", {})
+            if cvss and isinstance(cvss, dict):
+                score = float(cvss.get("score", 0))
+                if score >= 9.0:
+                    return "critical"
+                if score >= 7.0:
+                    return "high"
+                if score >= 4.0:
+                    return "medium"
+                return "low"
+        except (ValueError, TypeError, KeyError):
+            pass
+        return "medium"
 
     def _generate_patch_instructions(self, package_name: str, version: str) -> str:
         """Generate patch instructions for a package"""

@@ -13,7 +13,7 @@ import Select from "../components/ui/Select";
 import { useReducedMotion } from "../hooks/useAnimations";
 import { useResponsive } from "../hooks/useResponsive";
 import { useScreenReaderAnnouncement, ariaPatterns } from "../hooks/useScreenReader";
-import { runPerformanceAnalysis, type PerfRequest, type PerfResponse } from "../services/api";
+import { runPerformanceAnalysis, type PerfRequest, type PerfResponse } from "../services/perfApi";
 import { formatMemoryMB } from "../utils/formatters";
 import { assertFormatted } from "../utils/formatters";
 

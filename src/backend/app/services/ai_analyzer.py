@@ -1,25 +1,34 @@
+"""Code analysis engine — local-first, AI-optional.
+
+Local analysis (AST, metrics, security, complexity) runs always and
+requires zero API keys.  When an AI provider key is available, the AI
+layer enriches the results but never replaces them.
+"""
+
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import logging
-from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
+from typing import List, Optional, Dict, Any
 
-from .ai_providers import get_ai_provider_manager, ProviderUnavailable
-from .code_parser import parse_code
+from .smart_suggestions import generate_suggestions, generate_structured_suggestions
+from .code_metrics import compute_metrics
 from .complexity_analyzer import compute_complexity
 
 logger = logging.getLogger(__name__)
 
 
 class AIAnalyzer:
-    """Production-grade AI-powered code analyzer"""
+    """Local-first code analyzer with optional AI enrichment."""
 
     def __init__(self):
-        self.ai_manager = get_ai_provider_manager()
         self.cache: Dict[str, Any] = {}
         self.cache_ttl = 3600  # 1 hour
         self.last_cache_cleanup = datetime.now()
+
+    # ── public API ───────────────────────────────────────────────────
 
     async def analyze_code(
         self,
@@ -28,340 +37,229 @@ class AIAnalyzer:
         show_all: bool = False,
         analysis_type: str = "general",
     ) -> List[str]:
-        """Analyze code using AI providers"""
-        try:
-            # Validate inputs
-            if not code.strip():
-                raise ValueError("Code cannot be empty")
+        """Analyze code and return a list of suggestion strings.
 
-            if language not in [
-                "python",
-                "javascript",
-                "java",
-                "typescript",
-                "go",
-                "rust",
-            ]:
-                raise ValueError(f"Unsupported language: {language}")
+        1. Always runs the local analysis engine (zero dependencies).
+        2. Optionally enriches with AI suggestions when a provider key
+           is configured.
+        """
+        if not code.strip():
+            return ["Code is empty — nothing to analyze."]
 
-            # Check cache first
-            cache_key = self._generate_cache_key(
-                code, language, show_all, analysis_type
-            )
-            if cached_result := self._get_cached_result(cache_key):
-                logger.info(f"Returning cached analysis for {cache_key}")
-                return cached_result
+        # Normalise language
+        language = language.lower()
+        if language not in (
+            "python", "javascript", "typescript", "js", "ts", "java", "go", "rust",
+        ):
+            return [f"Language '{language}' is not yet supported for deep analysis."]
 
-            # Parse and analyze code
-            parsed_code = parse_code(code, language)
-            complexity = compute_complexity(language, code)
+        # Cache check
+        cache_key = self._cache_key(code, language, show_all, analysis_type)
+        if cached := self._get_cached(cache_key):
+            return cached
 
-            # Generate context-aware prompt
-            prompt_context = self._generate_analysis_context(
-                code, language, complexity, analysis_type, show_all
-            )
+        # ── 1. Local analysis (always) ───────────────────────────────
+        local_suggestions = generate_suggestions(code, language, show_all)
 
-            # Get AI suggestions
-            suggestions = await self._get_ai_suggestions(prompt_context, language)
+        # ── 2. AI enrichment (optional) ──────────────────────────────
+        ai_suggestions = await self._try_ai_suggestions(
+            code, language, analysis_type, show_all
+        )
 
-            # Post-process suggestions
-            processed_suggestions = self._process_suggestions(
-                suggestions, code, language, complexity, show_all
-            )
+        # Merge: local first, then any unique AI additions
+        merged = self._merge_suggestions(local_suggestions, ai_suggestions)
 
-            # Cache results
-            self._cache_result(cache_key, processed_suggestions)
+        # Cap at a reasonable number
+        max_count = 30 if show_all else 15
+        result = merged[:max_count]
 
-            # Cleanup old cache entries
-            await self._cleanup_cache()
+        self._cache_set(cache_key, result)
+        await self._cleanup_cache()
 
-            return processed_suggestions
+        return result
 
-        except Exception as e:
-            logger.error(f"Code analysis failed: {e}")
-            # Return fallback suggestions
-            return self._get_fallback_suggestions(code, language, complexity)
+    async def analyze_code_structured(
+        self,
+        code: str,
+        language: str,
+        show_all: bool = False,
+        analysis_type: str = "general",
+    ) -> Dict[str, Any]:
+        """Full structured analysis with metrics, complexity, and suggestions."""
+        language = language.lower()
 
-    def _generate_cache_key(
-        self, code: str, language: str, show_all: bool, analysis_type: str
-    ) -> str:
-        """Generate cache key for analysis results"""
-        import hashlib
+        suggestions = generate_structured_suggestions(code, language, show_all)
+        metrics = compute_metrics(code, language)
+        complexity = compute_complexity(language, code)
 
-        # Create a hash of the code content
-        code_hash = hashlib.md5(code.encode()).hexdigest()
+        # AI enrichment (best-effort)
+        ai_extras = await self._try_ai_suggestions(
+            code, language, analysis_type, show_all
+        )
 
-        return f"{language}:{analysis_type}:{show_all}:{code_hash}"
-
-    def _get_cached_result(self, cache_key: str) -> Optional[List[str]]:
-        """Get cached analysis result"""
-        if cache_key in self.cache:
-            cache_entry = self.cache[cache_key]
-            if datetime.now() - cache_entry["timestamp"] < timedelta(
-                seconds=self.cache_ttl
-            ):
-                return cache_entry["suggestions"]
-            else:
-                # Remove expired entry
-                del self.cache[cache_key]
-
-        return None
-
-    def _cache_result(self, cache_key: str, suggestions: List[str]):
-        """Cache analysis result"""
-        self.cache[cache_key] = {
+        return {
             "suggestions": suggestions,
-            "timestamp": datetime.now(),
+            "ai_suggestions": ai_extras,
+            "metrics": metrics,
+            "complexity": complexity,
+            "analysis_type": analysis_type,
+            "engine": "local" if not ai_extras else "local+ai",
         }
 
-    async def _cleanup_cache(self):
-        """Clean up old cache entries"""
-        now = datetime.now()
-        if now - self.last_cache_cleanup > timedelta(minutes=5):
-            expired_keys = [
-                key
-                for key, entry in self.cache.items()
-                if now - entry["timestamp"] > timedelta(seconds=self.cache_ttl)
-            ]
+    async def get_analysis_metrics(self) -> Dict[str, Any]:
+        """Return operational metrics about the analyzer."""
+        ai_status = {}
+        token_usage = {}
+        try:
+            from .ai_providers import get_ai_provider_manager
+            mgr = get_ai_provider_manager()
+            ai_status = mgr.get_provider_status()
+            token_usage = mgr.get_token_usage()
+        except Exception:
+            pass
 
-            for key in expired_keys:
-                del self.cache[key]
+        return {
+            "engine": "local-first",
+            "ai_providers": ai_status,
+            "token_usage": token_usage,
+            "cache_stats": {
+                "total_entries": len(self.cache),
+            },
+            "last_cleanup": self.last_cache_cleanup.isoformat(),
+        }
 
-            self.last_cache_cleanup = now
-            logger.debug(f"Cleaned up {len(expired_keys)} expired cache entries")
+    # ── AI layer (best-effort) ───────────────────────────────────────
 
-    def _generate_analysis_context(
+    async def _try_ai_suggestions(
         self,
         code: str,
         language: str,
-        complexity: float,
         analysis_type: str,
         show_all: bool,
-    ) -> str:
-        """Generate context-aware analysis prompt"""
-        context_parts = [
-            f"Language: {language}",
-            f"Code Complexity: {complexity}/10",
-            f"Analysis Type: {analysis_type}",
-            f"Show All: {show_all}",
-        ]
-
-        if analysis_type == "security":
-            context_parts.append(
-                "Focus on security vulnerabilities, input validation, and secure coding practices"
-            )
-        elif analysis_type == "performance":
-            context_parts.append(
-                "Focus on performance optimization, memory usage, and algorithmic efficiency"
-            )
-        elif analysis_type == "maintainability":
-            context_parts.append(
-                "Focus on code structure, readability, and maintainability"
-            )
-        else:
-            context_parts.append(
-                "Focus on general code quality, best practices, and improvements"
-            )
-
-        if complexity > 7:
-            context_parts.append(
-                "High complexity detected - prioritize simplification and refactoring"
-            )
-        elif complexity < 3:
-            context_parts.append(
-                "Low complexity - focus on optimization and edge cases"
-            )
-
-        context_parts.append(f"\nCode:\n{code}")
-
-        return "\n".join(context_parts)
-
-    async def _get_ai_suggestions(self, context: str, language: str) -> List[str]:
-        """Get AI suggestions using the provider manager"""
+    ) -> List[str]:
+        """Try to get AI suggestions; return [] on any failure."""
         try:
-            # Use the AI provider manager for suggestions
-            suggestions = await self.ai_manager.get_suggestions(context, language)
+            from .ai_providers import get_ai_provider_manager, ProviderUnavailable
 
-            if not suggestions:
-                logger.warning("No AI suggestions received")
+            mgr = get_ai_provider_manager()
+
+            # Quick check — if no provider has a key, skip entirely
+            status = mgr.get_provider_status()
+            if not any(p.get("enabled") for p in status.values()):
                 return []
 
-            return suggestions
+            context = self._build_ai_context(code, language, analysis_type, show_all)
+            suggestions = await asyncio.wait_for(
+                mgr.get_suggestions(context, language),
+                timeout=15.0,
+            )
+            return self._clean_ai_suggestions(suggestions or [])
 
-        except ProviderUnavailable as e:
-            logger.error(f"AI provider unavailable: {e}")
+        except asyncio.TimeoutError:
+            logger.warning("AI suggestion request timed out (15 s)")
             return []
         except Exception as e:
-            logger.error(f"Failed to get AI suggestions: {e}")
+            logger.debug(f"AI enrichment skipped: {e}")
             return []
 
-    def _process_suggestions(
-        self,
-        suggestions: List[str],
-        code: str,
-        language: str,
-        complexity: float,
-        show_all: bool,
-    ) -> List[str]:
-        """Process and filter AI suggestions"""
-        if not suggestions:
-            return []
-
-        processed = []
-
-        for suggestion in suggestions:
-            # Clean up suggestion text
-            cleaned = suggestion.strip()
-            if not cleaned or len(cleaned) < 10:
-                continue
-
-            # Remove common prefixes
-            for prefix in ["- ", "• ", "* ", "1. ", "2. ", "3. "]:
-                if cleaned.startswith(prefix):
-                    cleaned = cleaned[len(prefix) :]
-                    break
-
-            # Filter based on show_all flag
-            if not show_all:
-                # Only show high-impact suggestions when show_all is False
-                if self._is_high_impact_suggestion(cleaned, complexity):
-                    processed.append(cleaned)
-            else:
-                processed.append(cleaned)
-
-            # Limit number of suggestions
-            if len(processed) >= 5:
-                break
-
-        return processed
-
-    def _is_high_impact_suggestion(self, suggestion: str, complexity: float) -> bool:
-        """Determine if a suggestion is high-impact"""
-        high_impact_keywords = [
-            "security",
-            "vulnerability",
-            "performance",
-            "memory leak",
-            "race condition",
-            "deadlock",
-            "buffer overflow",
-            "sql injection",
-            "refactor",
-            "simplify",
-            "optimize",
-            "critical",
+    @staticmethod
+    def _build_ai_context(
+        code: str, language: str, analysis_type: str, show_all: bool
+    ) -> str:
+        parts = [
+            f"Language: {language}",
+            f"Analysis type: {analysis_type}",
+            f"Show all: {show_all}",
+            "",
+            "Code:",
+            code,
         ]
+        return "\n".join(parts)
 
-        suggestion_lower = suggestion.lower()
+    @staticmethod
+    def _clean_ai_suggestions(raw: List[str]) -> List[str]:
+        cleaned = []
+        for s in raw:
+            s = s.strip()
+            if len(s) < 10:
+                continue
+            for prefix in ("- ", "• ", "* ", "1. ", "2. ", "3. "):
+                if s.startswith(prefix):
+                    s = s[len(prefix):]
+                    break
+            cleaned.append(s)
+        return cleaned
 
-        # Check for high-impact keywords
-        for keyword in high_impact_keywords:
-            if keyword in suggestion_lower:
-                return True
+    # ── merge helpers ────────────────────────────────────────────────
 
-        # High complexity code gets more suggestions
-        if complexity > 7:
-            return True
-
-        return False
-
-    def _get_fallback_suggestions(
-        self, code: str, language: str, complexity: float
+    @staticmethod
+    def _merge_suggestions(
+        local: List[str], ai: List[str]
     ) -> List[str]:
-        """Get fallback suggestions when AI analysis fails"""
-        fallback_suggestions = []
+        """Combine local + AI, avoiding near-duplicates."""
+        seen = {s.lower()[:60] for s in local}
+        merged = list(local)
+        for s in ai:
+            key = s.lower()[:60]
+            if key not in seen:
+                seen.add(key)
+                merged.append(s)
+        return merged
 
-        # Language-specific fallback suggestions
-        if language == "python":
-            if complexity > 7:
-                fallback_suggestions.append(
-                    "Consider breaking down complex functions into smaller, more focused functions"
-                )
-            if "def " in code and "class " not in code:
-                fallback_suggestions.append(
-                    "Consider organizing code into classes for better structure"
-                )
-            if "import *" in code:
-                fallback_suggestions.append(
-                    "Avoid wildcard imports - import only what you need"
-                )
+    # ── caching ──────────────────────────────────────────────────────
 
-        elif language in ["javascript", "typescript"]:
-            if complexity > 7:
-                fallback_suggestions.append(
-                    "Consider using early returns to reduce nesting and complexity"
-                )
-            if "var " in code:
-                fallback_suggestions.append(
-                    "Use 'const' or 'let' instead of 'var' for better scoping"
-                )
-            if "function(" in code:
-                fallback_suggestions.append(
-                    "Consider using arrow functions for consistency"
-                )
+    def _cache_key(
+        self, code: str, language: str, show_all: bool, analysis_type: str
+    ) -> str:
+        h = hashlib.md5(code.encode()).hexdigest()
+        return f"{language}:{analysis_type}:{show_all}:{h}"
 
-        elif language == "java":
-            if complexity > 7:
-                fallback_suggestions.append(
-                    "Consider extracting complex logic into separate methods"
-                )
-            if "public static void main" in code:
-                fallback_suggestions.append(
-                    "Consider separating business logic from the main method"
-                )
+    def _get_cached(self, key: str) -> Optional[List[str]]:
+        entry = self.cache.get(key)
+        if entry is None:
+            return None
+        if datetime.now() - entry["ts"] < timedelta(seconds=self.cache_ttl):
+            return entry["data"]
+        del self.cache[key]
+        return None
 
-        # General fallback suggestions
-        if len(code.splitlines()) > 50:
-            fallback_suggestions.append(
-                "Consider breaking large files into smaller, focused modules"
-            )
+    def _cache_set(self, key: str, data: List[str]) -> None:
+        self.cache[key] = {"data": data, "ts": datetime.now()}
 
-        if not fallback_suggestions:
-            fallback_suggestions.append(
-                "Review code for potential improvements in readability and maintainability"
-            )
-
-        return fallback_suggestions[:3]  # Limit to 3 fallback suggestions
-
-    async def get_analysis_metrics(self) -> Dict[str, Any]:
-        """Get analysis metrics and statistics"""
-        try:
-            ai_status = self.ai_manager.get_provider_status()
-            token_usage = self.ai_manager.get_token_usage()
-
-            return {
-                "ai_providers": ai_status,
-                "token_usage": token_usage,
-                "cache_stats": {
-                    "total_entries": len(self.cache),
-                    "cache_hit_rate": "N/A",  # Would need to track hits/misses
-                },
-                "analysis_count": len(self.cache),
-                "last_cleanup": self.last_cache_cleanup.isoformat(),
-            }
-
-        except Exception as e:
-            logger.error(f"Failed to get analysis metrics: {e}")
-            return {"error": str(e)}
+    async def _cleanup_cache(self) -> None:
+        now = datetime.now()
+        if now - self.last_cache_cleanup < timedelta(minutes=5):
+            return
+        cutoff = now - timedelta(seconds=self.cache_ttl)
+        expired = [k for k, v in self.cache.items() if v["ts"] < cutoff]
+        for k in expired:
+            del self.cache[k]
+        self.last_cache_cleanup = now
 
 
-# Global analyzer instance
+# ── module-level convenience functions ───────────────────────────────
+
 _analyzer = AIAnalyzer()
 
 
 async def analyze_code(
     code: str, language: str, show_all: bool = False, analysis_type: str = "general"
 ) -> List[str]:
-    """Main function to analyze code using AI"""
+    """Primary entry point — returns list of suggestion strings."""
     return await _analyzer.analyze_code(code, language, show_all, analysis_type)
 
 
+async def analyze_code_structured(
+    code: str, language: str, show_all: bool = False, analysis_type: str = "general"
+) -> Dict[str, Any]:
+    """Structured entry point — returns dict with suggestions, metrics, complexity."""
+    return await _analyzer.analyze_code_structured(code, language, show_all, analysis_type)
+
+
 async def get_analysis_metrics() -> Dict[str, Any]:
-    """Get analysis metrics"""
     return await _analyzer.get_analysis_metrics()
 
 
-# Legacy function for backward compatibility
+# Legacy alias
 async def get_suggestions(code: str, language: str) -> List[str]:
-    """Legacy function for backward compatibility"""
     return await analyze_code(code, language, show_all=False)
